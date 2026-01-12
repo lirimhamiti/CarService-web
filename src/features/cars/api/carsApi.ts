@@ -10,9 +10,15 @@ export type CarDto = {
   plateNumber: string;
   vin: string;
   garageId: string;
+  createdAt: string;
 };
 
 export async function createCar(garageId: string, body: CreateCarRequest) {
   const res = await http.post<CarDto>(`/garages/${garageId}/cars`, body);
+  return res.data;
+}
+
+export async function getGarageCars(garageId: string) {
+  const res = await http.get<CarDto[]>(`/garages/${garageId}/cars`);
   return res.data;
 }

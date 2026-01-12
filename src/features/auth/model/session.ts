@@ -11,6 +11,10 @@ export function getSession(): GarageLoginResult | null {
   return raw ? (JSON.parse(raw) as GarageLoginResult) : null;
 }
 
+export function getGarageId(): string | null {
+  return getSession()?.garageId ?? null;
+}
+
 export function clearSession() {
   localStorage.removeItem(KEY);
 }
