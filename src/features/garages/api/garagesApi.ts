@@ -1,12 +1,7 @@
 import { http } from "../../../shared/http/http";
-import type { GarageDto } from "../model/types";
+import type { GarageDto, RegisterGarageRequest } from "../model/types";
 
-export async function getGarages() {
-  const res = await http.get<GarageDto[]>("/garages");
-  return res.data;
-}
-
-export async function createGarage(body: { name: string; city: string }) {
-  const res = await http.post<GarageDto>("/garages", body);
+export async function registerGarage(body: RegisterGarageRequest) {
+  const res = await http.post<GarageDto>("/garages/register", body);
   return res.data;
 }
