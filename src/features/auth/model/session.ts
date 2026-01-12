@@ -1,0 +1,16 @@
+import type { GarageLoginResult } from "../api/authApi";
+
+const KEY = "garage_session";
+
+export function saveSession(data: GarageLoginResult) {
+  localStorage.setItem(KEY, JSON.stringify(data));
+}
+
+export function getSession(): GarageLoginResult | null {
+  const raw = localStorage.getItem(KEY);
+  return raw ? (JSON.parse(raw) as GarageLoginResult) : null;
+}
+
+export function clearSession() {
+  localStorage.removeItem(KEY);
+}
