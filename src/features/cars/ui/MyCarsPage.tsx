@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import type { CarDto } from "../api/carsApi";
 import { getGarageCars, createCar } from "../api/carsApi";
 import { getSession } from "../../auth/model/session";
+import { useNavigate } from "react-router-dom";
+import HistoryIcon from "@mui/icons-material/History";
 
 import {
   Alert,
@@ -40,6 +42,8 @@ import {
 } from "../../services/servicesApi"; // <-- adjust path if yours differs
 
 export function MyCarsPage() {
+  const navigate = useNavigate();
+
   const session = getSession();
   const garageId = session?.garageId ?? null;
 
@@ -199,7 +203,6 @@ export function MyCarsPage() {
 
     setServiceSaving(true);
     try {
-      // IMPORTANT: this matches your backend entity naming (serviceDate, mileage, notes)
       const body: CreateServiceRequest = {
         serviceDate: new Date(serviceDate).toISOString(), // send ISO to backend
         mileage: mileageNum,
@@ -290,6 +293,9 @@ export function MyCarsPage() {
                       <TableCell>
                         <b>Created</b>
                       </TableCell>
+                       <TableCell align="right">
+                        <b>Services</b>
+                      </TableCell>
                       <TableCell align="right">
                         <b>Actions</b>
                       </TableCell>
@@ -306,6 +312,21 @@ export function MyCarsPage() {
                           {c.createdAt
                             ? new Date(c.createdAt).toLocaleString()
                             : "-"}
+                        </TableCell>
+                        <TableCell align="right">
+                          <Tooltip title="Check service history">
+                            <span>
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                startIcon={<HistoryIcon />}
+                                onClick={() => navigate(`/garage/cars/${c.id}/history`)}
+                              >
+                                History
+                              </Button>
+
+                            </span>
+                          </Tooltip>
                         </TableCell>
                         <TableCell align="right">
                           <Tooltip title="Add service record">
@@ -334,7 +355,6 @@ export function MyCarsPage() {
         </Card>
       </Stack>
 
-      {/* ✅ Add Car Dialog */}
       <Dialog open={open} onClose={closeDialog} fullWidth maxWidth="sm">
         <DialogTitle sx={{ pr: 6 }}>
           Add Car
