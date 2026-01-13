@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { CarDto } from "../api/carsApi"; 
+import type { CarDto } from "../api/carsApi";
 import { getGarageCars, createCar } from "../api/carsApi";
 import { getSession } from "../../auth/model/session";
 
@@ -26,11 +26,18 @@ import {
   TableRow,
   Paper,
   Tooltip,
+  Divider,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CloseIcon from "@mui/icons-material/Close";
+import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
+
+import {
+  createService,
+  type CreateServiceRequest,
+} from "../../services/servicesApi"; // <-- adjust path if yours differs
 
 export function MyCarsPage() {
   const session = getSession();
@@ -40,15 +47,44 @@ export function MyCarsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Add Car dialog
   const [open, setOpen] = useState(false);
   const [plateNumber, setPlateNumber] = useState("");
   const [vin, setVin] = useState("");
   const [saving, setSaving] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
+  // Add Service dialog (per car)
+  const [openService, setOpenService] = useState(false);
+  const [serviceCarId, setServiceCarId] = useState<string | null>(null);
+  const [servicePlate, setServicePlate] = useState<string>("");
+  const [serviceDate, setServiceDate] = useState<string>(() => {
+    // default to today (YYYY-MM-DD) so it works with input[type=date]
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  });
+  const [mileage, setMileage] = useState<string>("");
+  const [notes, setNotes] = useState<string>("");
+  const [serviceSaving, setServiceSaving] = useState(false);
+  const [serviceError, setServiceError] = useState<string | null>(null);
+  const [serviceDone, setServiceDone] = useState<string | null>(null);
+
   const canCreate = useMemo(() => {
     return !!garageId && plateNumber.trim().length > 0 && !saving;
   }, [garageId, plateNumber, saving]);
+
+  const canCreateService = useMemo(() => {
+    if (!garageId) return false;
+    if (!serviceCarId) return false;
+    if (!serviceDate) return false;
+    if (!mileage.trim()) return false;
+    if (Number.isNaN(Number(mileage))) return false;
+    if (Number(mileage) < 0) return false;
+    return !serviceSaving;
+  }, [garageId, serviceCarId, serviceDate, mileage, serviceSaving]);
 
   const load = async () => {
     setError(null);
@@ -75,6 +111,7 @@ export function MyCarsPage() {
     void load();
   }, [garageId]);
 
+  // ---- Add Car ----
   const openDialog = () => {
     setCreateError(null);
     setPlateNumber("");
@@ -116,6 +153,73 @@ export function MyCarsPage() {
     }
   };
 
+  // ---- Add Service ----
+  const openServiceDialog = (carId: string, plate: string) => {
+    setServiceError(null);
+    setServiceDone(null);
+    setServiceCarId(carId);
+    setServicePlate(plate);
+
+    // reset fields
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    setServiceDate(`${yyyy}-${mm}-${dd}`);
+
+    setMileage("");
+    setNotes("");
+    setOpenService(true);
+  };
+
+  const closeServiceDialog = () => {
+    if (serviceSaving) return;
+    setOpenService(false);
+  };
+
+  const submitService = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    setServiceError(null);
+    setServiceDone(null);
+
+    if (!garageId) {
+      setServiceError("You must login first.");
+      return;
+    }
+    if (!serviceCarId) {
+      setServiceError("Car is missing.");
+      return;
+    }
+
+    const mileageNum = Number(mileage);
+    if (!Number.isFinite(mileageNum) || mileageNum < 0) {
+      setServiceError("Mileage must be a valid non-negative number.");
+      return;
+    }
+
+    setServiceSaving(true);
+    try {
+      // IMPORTANT: this matches your backend entity naming (serviceDate, mileage, notes)
+      const body: CreateServiceRequest = {
+        serviceDate: new Date(serviceDate).toISOString(), // send ISO to backend
+        mileage: mileageNum,
+        notes: notes.trim() ? notes.trim() : undefined,
+      };
+
+      await createService(garageId, serviceCarId, body);
+      setServiceDone(`Service record added for ${servicePlate}.`);
+
+      setOpenService(false);
+
+      // optional: reload cars (not required) - keep if you later show "last service" on table
+      // await load();
+    } catch (err: any) {
+      setServiceError(err?.message ?? "Failed to add service record");
+    } finally {
+      setServiceSaving(false);
+    }
+  };
+
   return (
     <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }}>
       <Stack spacing={2}>
@@ -152,7 +256,14 @@ export function MyCarsPage() {
 
         {error && <Alert severity="error">{error}</Alert>}
 
-        <Card elevation={0} sx={{ borderRadius: 3, border: "1px solid", borderColor: "grey.200" }}>
+        <Card
+          elevation={0}
+          sx={{
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "grey.200",
+          }}
+        >
           <CardContent>
             {loading ? (
               <Stack direction="row" spacing={2} alignItems="center">
@@ -162,22 +273,56 @@ export function MyCarsPage() {
             ) : items.length === 0 ? (
               <Typography color="text.secondary">No cars yet.</Typography>
             ) : (
-              <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid", borderColor: "grey.200" }}>
+              <TableContainer
+                component={Paper}
+                elevation={0}
+                sx={{ border: "1px solid", borderColor: "grey.200" }}
+              >
                 <Table size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell><b>Plate</b></TableCell>
-                      <TableCell><b>VIN</b></TableCell>
-                      <TableCell><b>Created</b></TableCell>
+                      <TableCell>
+                        <b>Plate</b>
+                      </TableCell>
+                      <TableCell>
+                        <b>VIN</b>
+                      </TableCell>
+                      <TableCell>
+                        <b>Created</b>
+                      </TableCell>
+                      <TableCell align="right">
+                        <b>Actions</b>
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {items.map((c) => (
                       <TableRow key={c.id} hover>
-                        <TableCell sx={{ fontWeight: 700 }}>{c.plateNumber}</TableCell>
+                        <TableCell sx={{ fontWeight: 700 }}>
+                          {c.plateNumber}
+                        </TableCell>
                         <TableCell>{c.vin || "-"}</TableCell>
                         <TableCell>
-                          {c.createdAt ? new Date(c.createdAt).toLocaleString() : "-"}
+                          {c.createdAt
+                            ? new Date(c.createdAt).toLocaleString()
+                            : "-"}
+                        </TableCell>
+                        <TableCell align="right">
+                          <Tooltip title="Add service record">
+                            <span>
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                startIcon={<BuildOutlinedIcon />}
+                                onClick={() =>
+                                  openServiceDialog(c.id, c.plateNumber)
+                                }
+                                disabled={!garageId}
+                              >
+                                Add Service
+                              </Button>
+                            </span>
+                          </Tooltip>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -242,6 +387,92 @@ export function MyCarsPage() {
                 startIcon={saving ? <CircularProgress size={18} /> : undefined}
               >
                 {saving ? "Creating..." : "Create"}
+              </Button>
+            </span>
+          </Tooltip>
+        </DialogActions>
+      </Dialog>
+
+      {/* ✅ Add Service Dialog */}
+      <Dialog
+        open={openService}
+        onClose={closeServiceDialog}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle sx={{ pr: 6 }}>
+          Add Service Record
+          <IconButton
+            onClick={closeServiceDialog}
+            sx={{ position: "absolute", right: 8, top: 8 }}
+            aria-label="close"
+            disabled={serviceSaving}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent dividers>
+          <Stack spacing={2} component="form" onSubmit={submitService}>
+            <Typography variant="body2" color="text.secondary">
+              Car: <b>{servicePlate || "-"}</b>
+            </Typography>
+
+            <Divider />
+
+            {serviceError && <Alert severity="error">{serviceError}</Alert>}
+            {serviceDone && <Alert severity="success">{serviceDone}</Alert>}
+
+            {/* Using input type="date" for simple UX, sending ISO in submit */}
+            <TextField
+              label="Service date"
+              type="date"
+              value={serviceDate}
+              onChange={(e) => setServiceDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              required
+            />
+
+            <TextField
+              label="Mileage (km)"
+              value={mileage}
+              onChange={(e) => setMileage(e.target.value)}
+              fullWidth
+              required
+              inputMode="numeric"
+            />
+
+            <TextField
+              label="Notes (optional)"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              fullWidth
+              multiline
+              minRows={3}
+            />
+
+            {/* Hidden submit button so Enter works */}
+            <button type="submit" style={{ display: "none" }} />
+          </Stack>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={closeServiceDialog} disabled={serviceSaving}>
+            Cancel
+          </Button>
+
+          <Tooltip title={!garageId ? "Login required" : ""}>
+            <span>
+              <Button
+                variant="contained"
+                onClick={() => void submitService()}
+                disabled={!canCreateService}
+                startIcon={
+                  serviceSaving ? <CircularProgress size={18} /> : undefined
+                }
+              >
+                {serviceSaving ? "Saving..." : "Save service"}
               </Button>
             </span>
           </Tooltip>
