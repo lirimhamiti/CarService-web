@@ -50,27 +50,35 @@ const submit = async (e: React.FormEvent) => {
 };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100dvh",
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        px: 2,
-        overflow: "hidden",
-      }}
-    >
-      <Card
-        elevation={0}
-        sx={{
-          width: "100%",
-          maxWidth: 460,
-          borderRadius: 3,
-          border: "1px solid",
-          borderColor: "grey.200",
-        }}
-      >
+<Box
+  sx={{
+    minHeight: "100dvh",
+    width: "100%",          
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    px: { xs: 2, sm: 3 },  
+    py: { xs: 3, md: 0 },   
+    overflowX: "hidden",
+    overflowY: { xs: "auto", md: "hidden" },
+    boxSizing: "border-box",
+    marginTop:"-50px"
+  }}
+>
+
+
+    <Card
+  elevation={0}
+  sx={{
+    width: "100%",
+    maxWidth: 460,
+    borderRadius: 3,
+    border: "1px solid",
+    borderColor: "grey.200",
+    mx: "auto", 
+  }}
+>
+
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           <Stack spacing={2}>
             <Box>
