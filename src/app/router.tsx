@@ -15,9 +15,9 @@ export const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      { index: true, element: <GaragesPage /> },
-      { path: "admin/pending", element: <PendingGaragesPage /> },
-      { path: "garage/login", element: <GarageLoginPage /> },
+      { index: true, element:<GarageLoginPage />  },
+      { path: "admin/garages", element: <PendingGaragesPage /> },
+      { path: "garage/register", element:  <GaragesPage />},
       { path: "garage/cars", element: <MyCarsPage /> },
       { path: "garage/cars/:carId/history", element: <CarServicesPageHistory /> },
       { path: "owner", element: <OwnerHomePage /> },

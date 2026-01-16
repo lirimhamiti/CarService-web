@@ -15,3 +15,9 @@ export async function rejectGarage(id: string) {
   const res = await http.post<GarageDto>(`/admin/garages/${id}/reject`, {});
   return res.data;
 }
+
+export async function getGarages(status: "pending" | "approved" | "rejected" | "all") {
+  const url = status === "all" ? "/admin/garages" : `/admin/garages?status=${status}`;
+  const { data } = await http.get<GarageDto[]>(url);
+  return data;
+}
