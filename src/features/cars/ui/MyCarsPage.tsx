@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CarDto } from "../api/carsApi";
-import { getGarageCars, createCar } from "../api/carsApi";
+import { getGarageCars, createCar, getCarQrPng } from "../api/carsApi";
 import { getSession } from "../../auth/model/session";
 import { useNavigate } from "react-router-dom";
 import HistoryIcon from "@mui/icons-material/History";
+import QrCode2Icon from "@mui/icons-material/QrCode2";
 
 import {
   Alert,
@@ -223,6 +224,58 @@ export function MyCarsPage() {
     }
   };
 
+
+  // QR dialog
+  const [openQr, setOpenQr] = useState(false);
+  const [qrCarId, setQrCarId] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrError, setQrError] = useState<string | null>(null);
+  const [qrBlob, setQrBlob] = useState<Blob | null>(null);
+
+  const qrUrl = useMemo(() => (qrBlob ? URL.createObjectURL(qrBlob) : null), [qrBlob]);
+
+  useEffect(() => {
+    return () => {
+      if (qrUrl) URL.revokeObjectURL(qrUrl);
+    };
+  }, [qrUrl]);
+
+  const openQrDialog = async (carId: string) => {
+    setQrError(null);
+    setQrBlob(null);
+    setQrCarId(carId);
+    setOpenQr(true);
+
+    setQrLoading(true);
+    try {
+      const blob = await getCarQrPng(carId);
+      setQrBlob(blob);
+    } catch (e: any) {
+      setQrError(e?.message ?? "Failed to load QR");
+    } finally {
+      setQrLoading(false);
+    }
+  };
+
+  const closeQrDialog = () => {
+    if (qrLoading) return;
+    setOpenQr(false);
+  };
+
+  const downloadQr = () => {
+    if (!qrBlob || !qrCarId) return;
+
+    const url = URL.createObjectURL(qrBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `car-${qrCarId}-qr.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+
   return (
     <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }}>
       <Stack spacing={2}>
@@ -293,9 +346,10 @@ export function MyCarsPage() {
                       <TableCell>
                         <b>Created</b>
                       </TableCell>
-                       <TableCell align="right">
+                      <TableCell align="right">
                         <b>Services</b>
                       </TableCell>
+                      <TableCell align="right"><b>QR</b></TableCell>
                       <TableCell align="right">
                         <b>Actions</b>
                       </TableCell>
@@ -328,6 +382,20 @@ export function MyCarsPage() {
                             </span>
                           </Tooltip>
                         </TableCell>
+                        <TableCell align="right">
+                          <Tooltip title="Show QR code">
+                            <span>
+                              <IconButton
+                                size="small"
+                                onClick={() => void openQrDialog(c.id)}
+                                disabled={!garageId}
+                              >
+                                <QrCode2Icon />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                        </TableCell>
+
                         <TableCell align="right">
                           <Tooltip title="Add service record">
                             <span>
@@ -498,6 +566,42 @@ export function MyCarsPage() {
           </Tooltip>
         </DialogActions>
       </Dialog>
+
+      <Dialog open={openQr} onClose={closeQrDialog} fullWidth maxWidth="xs">
+  <DialogTitle sx={{ pr: 6 }}>
+    QR Code
+    <IconButton
+      onClick={closeQrDialog}
+      sx={{ position: "absolute", right: 8, top: 8 }}
+      aria-label="close"
+      disabled={qrLoading}
+    >
+      <CloseIcon />
+    </IconButton>
+  </DialogTitle>
+
+  <DialogContent dividers sx={{ display: "flex", justifyContent: "center" }}>
+    {qrLoading && <CircularProgress />}
+    {!qrLoading && qrError && <Alert severity="error">{qrError}</Alert>}
+    {!qrLoading && !qrError && qrUrl && (
+      <img
+        src={qrUrl}
+        alt="Car QR"
+        style={{ width: 260, height: 260 }}
+      />
+    )}
+  </DialogContent>
+
+  <DialogActions>
+    <Button onClick={downloadQr} disabled={!qrBlob || qrLoading}>
+      Download PNG
+    </Button>
+    <Button onClick={closeQrDialog} disabled={qrLoading}>
+      Close
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </Box>
   );
 }

@@ -22,3 +22,8 @@ export async function getGarageCars(garageId: string) {
   const res = await http.get<CarDto[]>(`/garages/${garageId}/cars`);
   return res.data;
 }
+
+export async function getCarQrPng(carId: string) {
+  const res = await http.get(`/cars/${carId}/qr`, { responseType: "blob" });
+  return res.data as Blob;
+}
