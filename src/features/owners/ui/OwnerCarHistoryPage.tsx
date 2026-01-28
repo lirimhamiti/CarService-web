@@ -28,6 +28,27 @@ import {
   type OwnerCarDto,
 } from "../api/ownerApi";
 
+function extractToken(input: string) {
+  const s = decodeURIComponent(input ?? "").trim();
+
+  try {
+    const u = new URL(s);
+    const t = u.searchParams.get("token");
+    if (t) return t.trim();
+  } catch {
+  }
+
+  const idx = s.toLowerCase().indexOf("token=");
+  if (idx >= 0) {
+    const after = s.substring(idx + "token=".length);
+    const token = after.split("&")[0].trim();
+    return token;
+  }
+
+  return s;
+}
+
+
 export function OwnerCarHistoryPage() {
   const navigate = useNavigate();
   const { kind, value } = useParams<{ kind: "vin" | "token"; value: string }>();
@@ -37,7 +58,10 @@ export function OwnerCarHistoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const titleValue = useMemo(() => decodeURIComponent(value ?? ""), [value]);
+const titleValue = useMemo(() => {
+  if (!value) return "";
+  return kind === "token" ? extractToken(value) : decodeURIComponent(value);
+}, [kind, value]);
 
   const load = async () => {
     if (!kind || !value) return;
@@ -55,7 +79,7 @@ export function OwnerCarHistoryPage() {
         setCar(carDto);
         setItems(services);
       } else {
-        const token = decodeURIComponent(value);
+        const token = extractToken(value);
         const [carDto, services] = await Promise.all([
           ownerGetCarByToken(token),
           ownerGetServicesByToken(token),

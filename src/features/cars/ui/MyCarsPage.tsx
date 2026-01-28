@@ -40,7 +40,7 @@ import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
 import {
   createService,
   type CreateServiceRequest,
-} from "../../services/servicesApi"; // <-- adjust path if yours differs
+} from "../../services/servicesApi"; 
 
 export function MyCarsPage() {
   const navigate = useNavigate();
@@ -52,19 +52,17 @@ export function MyCarsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Add Car dialog
   const [open, setOpen] = useState(false);
   const [plateNumber, setPlateNumber] = useState("");
   const [vin, setVin] = useState("");
   const [saving, setSaving] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
-  // Add Service dialog (per car)
   const [openService, setOpenService] = useState(false);
   const [serviceCarId, setServiceCarId] = useState<string | null>(null);
   const [servicePlate, setServicePlate] = useState<string>("");
   const [serviceDate, setServiceDate] = useState<string>(() => {
-    // default to today (YYYY-MM-DD) so it works with input[type=date]
+
     const d = new Date();
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -116,7 +114,6 @@ export function MyCarsPage() {
     void load();
   }, [garageId]);
 
-  // ---- Add Car ----
   const openDialog = () => {
     setCreateError(null);
     setPlateNumber("");
@@ -158,14 +155,12 @@ export function MyCarsPage() {
     }
   };
 
-  // ---- Add Service ----
   const openServiceDialog = (carId: string, plate: string) => {
     setServiceError(null);
     setServiceDone(null);
     setServiceCarId(carId);
     setServicePlate(plate);
 
-    // reset fields
     const d = new Date();
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -205,7 +200,7 @@ export function MyCarsPage() {
     setServiceSaving(true);
     try {
       const body: CreateServiceRequest = {
-        serviceDate: new Date(serviceDate).toISOString(), // send ISO to backend
+        serviceDate: new Date(serviceDate).toISOString(), 
         mileage: mileageNum,
         notes: notes.trim() ? notes.trim() : undefined,
       };
@@ -215,8 +210,7 @@ export function MyCarsPage() {
 
       setOpenService(false);
 
-      // optional: reload cars (not required) - keep if you later show "last service" on table
-      // await load();
+
     } catch (err: any) {
       setServiceError(err?.message ?? "Failed to add service record");
     } finally {
@@ -456,7 +450,6 @@ export function MyCarsPage() {
               fullWidth
             />
 
-            {/* Hidden submit button so Enter works */}
             <button type="submit" style={{ display: "none" }} />
           </Stack>
         </DialogContent>
@@ -481,7 +474,6 @@ export function MyCarsPage() {
         </DialogActions>
       </Dialog>
 
-      {/* ✅ Add Service Dialog */}
       <Dialog
         open={openService}
         onClose={closeServiceDialog}
@@ -511,7 +503,6 @@ export function MyCarsPage() {
             {serviceError && <Alert severity="error">{serviceError}</Alert>}
             {serviceDone && <Alert severity="success">{serviceDone}</Alert>}
 
-            {/* Using input type="date" for simple UX, sending ISO in submit */}
             <TextField
               label="Service date"
               type="date"
@@ -540,7 +531,6 @@ export function MyCarsPage() {
               minRows={3}
             />
 
-            {/* Hidden submit button so Enter works */}
             <button type="submit" style={{ display: "none" }} />
           </Stack>
         </DialogContent>
