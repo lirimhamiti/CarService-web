@@ -13,7 +13,11 @@ export type OwnerServiceRecordDto = {
   mileage: number;
   notes?: string | null;
   createdAt: string;
+  garageId: string;
+  garageName: string;
+  garageCity: string;
 };
+
 
 export async function ownerGetCarByVin(vin: string) {
   const { data } = await http.get<OwnerCarDto>(`/owner/cars/by-vin/${encodeURIComponent(vin)}`);

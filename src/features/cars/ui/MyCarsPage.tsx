@@ -40,7 +40,7 @@ import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
 import {
   createService,
   type CreateServiceRequest,
-} from "../../services/servicesApi"; 
+} from "../../services/servicesApi";
 
 export function MyCarsPage() {
   const navigate = useNavigate();
@@ -76,8 +76,11 @@ export function MyCarsPage() {
   const [serviceDone, setServiceDone] = useState<string | null>(null);
 
   const canCreate = useMemo(() => {
-    return !!garageId && plateNumber.trim().length > 0 && !saving;
-  }, [garageId, plateNumber, saving]);
+    const v = vin.trim();
+    return !!garageId && plateNumber.trim().length > 0 && v.length === 17 && !saving;
+  }, [garageId, plateNumber, vin, saving]);
+
+
 
   const canCreateService = useMemo(() => {
     if (!garageId) return false;
@@ -130,6 +133,16 @@ export function MyCarsPage() {
     e?.preventDefault();
     setCreateError(null);
 
+    if (!vin.trim()) {
+      setCreateError("VIN is required.");
+      return;
+    }
+    if (vin.trim().length !== 17) {
+      setCreateError("VIN must be exactly 17 characters.");
+      return;
+    }
+
+
     if (!garageId) {
       setCreateError("You must login first.");
       return;
@@ -143,7 +156,7 @@ export function MyCarsPage() {
     try {
       await createCar(garageId, {
         plateNumber: plateNumber.trim(),
-        vin: vin.trim() ? vin.trim() : undefined,
+        vin: vin.trim().toUpperCase(),
       });
 
       setOpen(false);
@@ -200,7 +213,7 @@ export function MyCarsPage() {
     setServiceSaving(true);
     try {
       const body: CreateServiceRequest = {
-        serviceDate: new Date(serviceDate).toISOString(), 
+        serviceDate: new Date(serviceDate).toISOString(),
         mileage: mileageNum,
         notes: notes.trim() ? notes.trim() : undefined,
       };
@@ -437,18 +450,22 @@ export function MyCarsPage() {
             <TextField
               label="Plate number"
               value={plateNumber}
-              onChange={(e) => setPlateNumber(e.target.value)}
+              onChange={(e) => setPlateNumber(e.target.value.toUpperCase())}
               required
               fullWidth
               autoFocus
             />
 
             <TextField
-              label="VIN (optional)"
+              label="VIN (17 chars)"
               value={vin}
-              onChange={(e) => setVin(e.target.value)}
+              onChange={(e) => setVin(e.target.value.toUpperCase())}
+              required
               fullWidth
+              inputProps={{ maxLength: 17 }}
+              helperText="VIN must be exactly 17 characters"
             />
+
 
             <button type="submit" style={{ display: "none" }} />
           </Stack>
@@ -558,39 +575,39 @@ export function MyCarsPage() {
       </Dialog>
 
       <Dialog open={openQr} onClose={closeQrDialog} fullWidth maxWidth="xs">
-  <DialogTitle sx={{ pr: 6 }}>
-    QR Code
-    <IconButton
-      onClick={closeQrDialog}
-      sx={{ position: "absolute", right: 8, top: 8 }}
-      aria-label="close"
-      disabled={qrLoading}
-    >
-      <CloseIcon />
-    </IconButton>
-  </DialogTitle>
+        <DialogTitle sx={{ pr: 6 }}>
+          QR Code
+          <IconButton
+            onClick={closeQrDialog}
+            sx={{ position: "absolute", right: 8, top: 8 }}
+            aria-label="close"
+            disabled={qrLoading}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
 
-  <DialogContent dividers sx={{ display: "flex", justifyContent: "center" }}>
-    {qrLoading && <CircularProgress />}
-    {!qrLoading && qrError && <Alert severity="error">{qrError}</Alert>}
-    {!qrLoading && !qrError && qrUrl && (
-      <img
-        src={qrUrl}
-        alt="Car QR"
-        style={{ width: 260, height: 260 }}
-      />
-    )}
-  </DialogContent>
+        <DialogContent dividers sx={{ display: "flex", justifyContent: "center" }}>
+          {qrLoading && <CircularProgress />}
+          {!qrLoading && qrError && <Alert severity="error">{qrError}</Alert>}
+          {!qrLoading && !qrError && qrUrl && (
+            <img
+              src={qrUrl}
+              alt="Car QR"
+              style={{ width: 260, height: 260 }}
+            />
+          )}
+        </DialogContent>
 
-  <DialogActions>
-    <Button onClick={downloadQr} disabled={!qrBlob || qrLoading}>
-      Download PNG
-    </Button>
-    <Button onClick={closeQrDialog} disabled={qrLoading}>
-      Close
-    </Button>
-  </DialogActions>
-</Dialog>
+        <DialogActions>
+          <Button onClick={downloadQr} disabled={!qrBlob || qrLoading}>
+            Download PNG
+          </Button>
+          <Button onClick={closeQrDialog} disabled={qrLoading}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
 
     </Box>
   );

@@ -2,14 +2,13 @@ import { http } from "../../../shared/http/http";
 
 export type CreateCarRequest = {
   plateNumber: string;
-  vin?: string;
+  vin: string;
 };
 
 export type CarDto = {
   id: string;
   plateNumber: string;
   vin: string;
-  garageId: string;
   createdAt: string;
 };
 

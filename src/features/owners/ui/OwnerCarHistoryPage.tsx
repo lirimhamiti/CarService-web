@@ -142,6 +142,7 @@ const titleValue = useMemo(() => {
                 <Table size="small">
                   <TableHead>
                     <TableRow>
+                      <TableCell><b>Garage</b></TableCell>
                       <TableCell><b>Date</b></TableCell>
                       <TableCell><b>Mileage</b></TableCell>
                       <TableCell><b>Notes</b></TableCell>
@@ -151,6 +152,7 @@ const titleValue = useMemo(() => {
                   <TableBody>
                     {items.map((s) => (
                       <TableRow key={s.id} hover>
+                        <TableCell>{s.garageName} ({s.garageCity})</TableCell>
                         <TableCell>{s.serviceDate ? new Date(s.serviceDate).toLocaleDateString() : "-"}</TableCell>
                         <TableCell>{s.mileage ?? "-"}</TableCell>
                         <TableCell>{s.notes || "-"}</TableCell>
