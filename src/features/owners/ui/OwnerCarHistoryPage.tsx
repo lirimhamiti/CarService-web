@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import DownloadIcon from "@mui/icons-material/Download";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ownerGetCarByToken,
@@ -27,6 +28,9 @@ import {
   type OwnerServiceRecordDto,
   type OwnerCarDto,
 } from "../api/ownerApi";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 
 function extractToken(input: string) {
   const s = decodeURIComponent(input ?? "").trim();
@@ -49,6 +53,8 @@ function extractToken(input: string) {
 }
 
 
+
+
 export function OwnerCarHistoryPage() {
   const navigate = useNavigate();
   const { kind, value } = useParams<{ kind: "vin" | "token"; value: string }>();
@@ -58,10 +64,10 @@ export function OwnerCarHistoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-const titleValue = useMemo(() => {
-  if (!value) return "";
-  return kind === "token" ? extractToken(value) : decodeURIComponent(value);
-}, [kind, value]);
+  const titleValue = useMemo(() => {
+    if (!value) return "";
+    return kind === "token" ? extractToken(value) : decodeURIComponent(value);
+  }, [kind, value]);
 
   const load = async () => {
     if (!kind || !value) return;
@@ -98,6 +104,62 @@ const titleValue = useMemo(() => {
     void load();
   }, [kind, value]);
 
+  const downloadReportPdf = () => {
+  if (!car) return;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const identifier = (kind === "vin" ? car.vin : titleValue)
+    .replace(/[^a-z0-9_-]/gi, "_")
+    .slice(0, 40);
+
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "pt",
+    format: "a4",
+  });
+
+  doc.setFontSize(18);
+  doc.text("Service History Report", 40, 50);
+
+  doc.setFontSize(11);
+  const metaLines = [
+    `Report Date: ${today}`,
+    `Plate: ${car.plateNumber}`,
+    `VIN: ${car.vin}`,
+  ];
+
+  let y = 75;
+  for (const line of metaLines) {
+    doc.text(line, 40, y);
+    y += 16;
+  }
+
+  const rows = items.map((s) => [
+    `${s.garageName} (${s.garageCity})`,
+    s.serviceDate ? new Date(s.serviceDate).toLocaleDateString() : "-",
+    String(s.mileage ?? "-"),
+    s.notes ?? "-",
+    s.createdAt ? new Date(s.createdAt).toLocaleString() : "-",
+  ]);
+
+  autoTable(doc, {
+    startY: y + 10,
+    head: [["Garage", "Date", "Mileage", "Notes"]],
+    body: rows,
+    styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
+    headStyles: { fontStyle: "bold" },
+    columnStyles: {
+      0: { cellWidth: 140 }, 
+      1: { cellWidth: 70 }, 
+      2: { cellWidth: 70 },  
+      3: { cellWidth: 220 }
+    },
+  });
+
+  doc.save(`service-history-${identifier}-${today}.pdf`);
+};
+
+
   return (
     <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }}>
       <Stack spacing={2}>
@@ -117,6 +179,15 @@ const titleValue = useMemo(() => {
           </Box>
 
           <Stack direction="row" spacing={1}>
+            <Button
+              variant="contained"
+              startIcon={<DownloadIcon />}
+              onClick={downloadReportPdf}
+              disabled={loading || !car}
+            >
+              Download Report
+            </Button>
+
             <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate("/owner")}>
               Back
             </Button>
