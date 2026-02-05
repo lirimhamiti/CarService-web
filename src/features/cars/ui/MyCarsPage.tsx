@@ -74,6 +74,7 @@ export function MyCarsPage() {
   const [serviceSaving, setServiceSaving] = useState(false);
   const [serviceError, setServiceError] = useState<string | null>(null);
   const [serviceDone, setServiceDone] = useState<string | null>(null);
+  
 
   const canCreate = useMemo(() => {
     const v = vin.trim();
@@ -232,7 +233,6 @@ export function MyCarsPage() {
   };
 
 
-  // QR dialog
   const [openQr, setOpenQr] = useState(false);
   const [qrCarId, setQrCarId] = useState<string | null>(null);
   const [qrLoading, setQrLoading] = useState(false);
