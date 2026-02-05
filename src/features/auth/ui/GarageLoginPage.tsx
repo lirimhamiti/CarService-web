@@ -24,60 +24,67 @@ export function GarageLoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
 
   const canSubmit = username.trim() && password && !saving;
-const submit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError(null);
-  setDone(null);
-  setSaving(true);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setDone(null);
+    setSaving(true);
 
-  try {
-    const result = await loginGarage({ username, password });
-    saveSession(result);
+    try {
+      const result = await loginGarage({ username, password });
+      saveSession(result);
 
-    navigate("/garage/cars", { replace: true });
-  } catch (e: any) {
-    setError(e?.message ?? "Login failed (maybe not approved yet).");
-  } finally {
-    setSaving(false);
-  }
-};
+      navigate("/garage/cars", { replace: true });
+ } catch (err: unknown) {
+  const msg =
+    err instanceof Error
+      ? err.message
+      : typeof err === "string"
+        ? err
+        : JSON.stringify(err);
+
+  setError(msg || "Login failed.");}
+    finally {
+      setSaving(false);
+    }
+  };
 
   return (
-<Box
-  sx={{
-    minHeight: "100dvh",
-    width: "100%",          
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    px: { xs: 2, sm: 3 },  
-    py: { xs: 3, md: 0 },   
-    overflowX: "hidden",
-    overflowY: { xs: "auto", md: "hidden" },
-    boxSizing: "border-box",
-    marginTop:"-50px"
-  }}
->
+    <Box
+      sx={{
+        minHeight: "100dvh",
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        px: { xs: 2, sm: 3 },
+        py: { xs: 3, md: 0 },
+        overflowX: "hidden",
+        overflowY: { xs: "auto", md: "hidden" },
+        boxSizing: "border-box",
+        marginTop: "-50px"
+      }}
+    >
 
 
-    <Card
-  elevation={0}
-  sx={{
-    width: "100%",
-    maxWidth: 460,
-    borderRadius: 3,
-    border: "1px solid",
-    borderColor: "grey.200",
-    mx: "auto", 
-  }}
->
+      <Card
+        elevation={0}
+        sx={{
+          width: "100%",
+          maxWidth: 460,
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "grey.200",
+          mx: "auto",
+        }}
+      >
 
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           <Stack spacing={2}>

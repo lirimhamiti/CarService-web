@@ -9,14 +9,7 @@ export const http = axios.create({
 });
 
 http.interceptors.response.use(
-  response => response,
-  error => {
-    const message =
-      error?.response?.data?.message ||
-      error?.response?.data ||
-      error?.message ||
-      "Unexpected error";
-
-    return Promise.reject(new Error(message));
-  }
+  (response) => response,
+  (error) => Promise.reject(error)
 );
+
