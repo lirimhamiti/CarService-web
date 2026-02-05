@@ -15,12 +15,14 @@ import {
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import { useNavigate } from "react-router-dom";
-
+import { useTranslation } from "react-i18next";
 
 import { loginGarage } from "../api/authApi";
 import { saveSession } from "../model/session";
 
 export function GarageLoginPage() {
+  const { t } = useTranslation();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -31,6 +33,7 @@ export function GarageLoginPage() {
   const [done, setDone] = useState<string | null>(null);
 
   const canSubmit = username.trim() && password && !saving;
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -40,18 +43,17 @@ export function GarageLoginPage() {
     try {
       const result = await loginGarage({ username, password });
       saveSession(result);
-
       navigate("/garage/cars", { replace: true });
- } catch (err: unknown) {
-  const msg =
-    err instanceof Error
-      ? err.message
-      : typeof err === "string"
-        ? err
-        : JSON.stringify(err);
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === "string"
+            ? err
+            : "";
 
-  setError(msg || "Login failed.");}
-    finally {
+      setError(msg || t("auth.loginFailed"));
+    } finally {
       setSaving(false);
     }
   };
@@ -69,11 +71,9 @@ export function GarageLoginPage() {
         overflowX: "hidden",
         overflowY: { xs: "auto", md: "hidden" },
         boxSizing: "border-box",
-        marginTop: "-50px"
+        marginTop: "-50px",
       }}
     >
-
-
       <Card
         elevation={0}
         sx={{
@@ -85,18 +85,19 @@ export function GarageLoginPage() {
           mx: "auto",
         }}
       >
-
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           <Stack spacing={2}>
             <Box>
               <Typography variant="h4" fontWeight={800}>
                 CarService
               </Typography>
+
               <Typography variant="subtitle1" fontWeight={700} sx={{ mt: 0.5 }}>
-                Garage Login
+                {t("auth.garageLoginTitle")}
               </Typography>
+
               <Typography variant="body2" color="text.secondary">
-                Sign in to manage your cars and service records.
+                {t("auth.garageLoginSubtitle")}
               </Typography>
             </Box>
 
@@ -106,7 +107,7 @@ export function GarageLoginPage() {
             <Box component="form" onSubmit={submit}>
               <Stack spacing={2}>
                 <TextField
-                  label="Username"
+                  label={t("auth.username")}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   fullWidth
@@ -115,7 +116,7 @@ export function GarageLoginPage() {
                 />
 
                 <TextField
-                  label="Password"
+                  label={t("auth.password")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   type={showPw ? "text" : "password"}
@@ -126,7 +127,7 @@ export function GarageLoginPage() {
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
-                          aria-label="toggle password visibility"
+                          aria-label={t("auth.togglePasswordVisibility")}
                           onClick={() => setShowPw((s) => !s)}
                           edge="end"
                         >
@@ -149,11 +150,11 @@ export function GarageLoginPage() {
                   disabled={!canSubmit}
                   startIcon={saving ? <CircularProgress size={18} /> : undefined}
                 >
-                  {saving ? "Logging in..." : "Login"}
+                  {saving ? t("auth.loggingIn") : t("auth.login")}
                 </Button>
 
                 <Typography variant="caption" color="text.secondary">
-                  If you just registered, you may need to wait for admin approval.
+                  {t("auth.waitForApprovalHint")}
                 </Typography>
               </Stack>
             </Box>

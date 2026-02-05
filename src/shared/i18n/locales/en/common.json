@@ -1,0 +1,208 @@
+{
+ "common": {
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "close": "Close",
+    "create": "Create",
+    "creating": "Creating...",
+    "saving": "Saving...",
+    "loginRequired": "Login required",
+    "togglePasswordVisibility": "Toggle password visibility",
+    "back": "Back",
+    "search": "Search",
+    "searching": "Searching..."
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "unknown": "Unknown"
+  },
+  "admin": {
+    "garages": {
+      "title": "Garages",
+      "subtitle": "Review registrations and manage approval status.",
+      "tabPending": "Pending",
+      "tabApproved": "Approved",
+      "tabRejected": "Rejected",
+      "tabAll": "All",
+      "loadFail": "Failed to load garages",
+      "approvedSnack": "Approved: {{name}}",
+      "rejectedSnack": "Rejected: {{name}}",
+      "table": {
+        "garage": "Garage",
+        "city": "City",
+        "email": "Email",
+        "username": "Username",
+        "status": "Status"
+      },
+      "emptyTitle": "No garages",
+      "emptySubtitle": "Nothing to show for this filter.",
+      "confirmApproveTitle": "Approve garage?",
+      "confirmRejectTitle": "Reject garage?",
+      "confirmBody": "Are you sure you want to {{action}} {{name}} ({{city}})?"
+    }
+  },
+   "auth": {
+    "garageLoginTitle": "Garage Login",
+    "garageLoginSubtitle": "Sign in to manage your cars and service records.",
+    "username": "Username",
+    "password": "Password",
+    "togglePasswordVisibility": "Toggle password visibility",
+    "login": "Login",
+    "loggingIn": "Logging in...",
+    "loginFailed": "Login failed. Please try again.",
+    "waitForApprovalHint": "If you just registered, you may need to wait for admin approval."
+  },
+   "garageCars": {
+    "title": "My Cars",
+    "loggedInAs": "Logged in as {{name}}",
+
+    "addCar": "Add car",
+    "history": "History",
+    "addService": "Add service",
+
+    "noGarageLoggedIn": "No garage logged in.",
+    "failedToLoadCars": "Failed to load cars.",
+    "noCarsYet": "No cars yet.",
+
+    "columns": {
+      "plate": "Plate",
+      "vin": "VIN",
+      "created": "Created",
+      "services": "Services",
+      "qr": "QR",
+      "actions": "Actions"
+    },
+
+    "tooltips": {
+      "history": "Check service history",
+      "showQr": "Show QR code",
+      "addService": "Add service record"
+    },
+
+    "addCarTitle": "Add Car",
+    "plateLabel": "Plate number",
+    "vinLabel": "VIN (17 chars)",
+    "vinHelper": "VIN must be exactly 17 characters",
+    "vinRequired": "VIN is required.",
+    "vinMustBe17": "VIN must be exactly 17 characters.",
+    "plateRequired": "Plate number is required.",
+    "failedToCreateCar": "Failed to create car.",
+
+    "addServiceTitle": "Add Service Record",
+    "carLabel": "Car:",
+    "serviceDateLabel": "Service date",
+    "mileageLabel": "Mileage (km)",
+    "notesLabel": "Notes (optional)",
+    "carMissing": "Car is missing.",
+    "mileageInvalid": "Mileage must be a valid non-negative number.",
+    "failedToAddService": "Failed to add service record.",
+    "saveService": "Save service",
+
+    "qrTitle": "QR Code",
+    "qrAlt": "Car QR",
+    "failedToLoadQr": "Failed to load QR.",
+    "downloadPng": "Download PNG"
+  },
+  "garageRegister": {
+    "title": "Garage Registration",
+    "subtitle": "After registration, your account stays pending until admin approval.",
+
+    "fields": {
+      "garageName": "Garage name",
+      "city": "City",
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "confirmPassword": "Confirm password"
+    },
+
+    "register": "Register",
+    "registering": "Registering...",
+    "passwordsDoNotMatch": "Passwords do not match.",
+    "failedToRegister": "Failed to register garage.",
+    "registeredPending": "Registered. Status: {{status}}. Wait for admin approval."
+  },
+  "app": {
+    "title": "CarService"
+  },
+  "owner": {
+       "scan": {
+      "title": "Scan QR",
+      "tip": "Camera requires HTTPS in production. Localhost works in dev.",
+      "errors": {
+        "cameraDenied": "Camera permission denied or not available."
+      }
+    },
+    "history": {
+      "title": "Service History",
+      "vin": "VIN",
+      "token": "Token",
+      "plate": "Plate",
+      "empty": "No service records found.",
+      "actions": {
+        "download": "Download Report"
+      },
+      "errors": {
+        "loadFailed": "Failed to load history."
+      },
+      "table": {
+        "garage": "Garage",
+        "date": "Date",
+        "mileage": "Mileage",
+        "notes": "Notes",
+        "created": "Created"
+      },
+      "pdf": {
+        "title": "Service History Report",
+        "reportDate": "Report Date",
+        "plate": "Plate",
+        "vin": "VIN"
+      }
+    },
+        "home": {
+      "title": "Car History",
+      "subtitle": "Check your car service history by VIN or QR code.",
+      "actions": {
+        "byVin": "Check by VIN",
+        "byQr": "Check by QR"
+      },
+      "fields": {
+        "vin": "Enter VIN"
+      },
+      "tip": "Tip: QR scanning works best on mobile (HTTPS required for camera access).",
+      "errors": {
+        "searchFailed": "Search failed."
+      }
+    }
+  },
+    "carServices": {
+    "title": "Service History",
+    "loggedInAs": "Logged in as",
+    "carIdLabel": "CarId:",
+    "addService": "Add service",
+    "noGarageLoggedIn": "No garage logged in.",
+    "carIdMissingFromUrl": "CarId missing from URL.",
+    "failedToLoadHistory": "Failed to load service history",
+    "mustLoginFirst": "You must login first.",
+    "carIdMissing": "CarId missing.",
+    "mileageInvalid": "Mileage must be a valid non-negative number.",
+    "failedToAddService": "Failed to add service record",
+    "empty": "No service records yet.",
+    "table": {
+      "date": "Date",
+      "mileage": "Mileage",
+      "notes": "Notes",
+      "created": "Created"
+    },
+    "dialog": {
+      "title": "Add Service Record",
+      "serviceDate": "Service date",
+      "mileage": "Mileage (km)",
+      "notes": "Notes (optional)",
+      "saveService": "Save service"
+    }
+  }
+}

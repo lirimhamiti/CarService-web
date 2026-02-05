@@ -13,10 +13,12 @@ import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyIcon from "@mui/icons-material/Key";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { ownerGetCarByVin } from "../../owners/api/ownerApi";
 
 export function OwnerHomePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<"vin" | "qr" | null>(null);
@@ -31,25 +33,43 @@ export function OwnerHomePage() {
     setLoading(true);
     try {
       const result = await ownerGetCarByVin(vin.trim());
-
       navigate(`/owner/history/vin/${encodeURIComponent(result.vin)}`);
     } catch (e: any) {
-      setError(e?.message ?? "Search failed.");
+      setError(e?.message ?? t("owner.home.errors.searchFailed"));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box sx={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", px: 2, mt: "-50px" }}>
-      <Card sx={{ width: "100%", maxWidth: 520, borderRadius: 3, border: "1px solid", borderColor: "grey.200" }} elevation={0}>
+    <Box
+      sx={{
+        minHeight: "100dvh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        px: 2,
+        mt: "-50px",
+      }}
+    >
+      <Card
+        sx={{
+          width: "100%",
+          maxWidth: 520,
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "grey.200",
+        }}
+        elevation={0}
+      >
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           <Stack spacing={2}>
             <Typography variant="h4" fontWeight={800}>
-              Car History
+              {t("owner.home.title")}
             </Typography>
+
             <Typography color="text.secondary">
-              Check your car service history by VIN or QR code.
+              {t("owner.home.subtitle")}
             </Typography>
 
             <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
@@ -59,7 +79,7 @@ export function OwnerHomePage() {
                 startIcon={<KeyIcon />}
                 onClick={() => setMode("vin")}
               >
-                Check by VIN
+                {t("owner.home.actions.byVin")}
               </Button>
 
               <Button
@@ -71,7 +91,7 @@ export function OwnerHomePage() {
                   navigate("/owner/scan");
                 }}
               >
-                Check by QR
+                {t("owner.home.actions.byQr")}
               </Button>
             </Stack>
 
@@ -80,25 +100,26 @@ export function OwnerHomePage() {
             {mode === "vin" && (
               <Stack spacing={1.5}>
                 <TextField
-                  label="Enter VIN"
+                  label={t("owner.home.fields.vin")}
                   value={vin}
                   onChange={(e) => setVin(e.target.value)}
                   fullWidth
                   autoFocus
                 />
+
                 <Button
                   variant="contained"
                   startIcon={<SearchIcon />}
                   disabled={!canSearch}
                   onClick={() => void onVinSearch()}
                 >
-                  {loading ? "Searching..." : "Search"}
+                  {loading ? t("common.searching") : t("common.search")}
                 </Button>
               </Stack>
             )}
 
             <Typography variant="caption" color="text.secondary">
-              Tip: QR scanning works best on mobile (HTTPS required for camera access).
+              {t("owner.home.tip")}
             </Typography>
           </Stack>
         </CardContent>

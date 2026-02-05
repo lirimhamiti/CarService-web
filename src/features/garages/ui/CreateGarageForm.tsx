@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Box,
@@ -17,6 +18,8 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 import { registerGarage } from "../api/garagesApi";
 
 export function CreateGarageForm() {
+  const { t } = useTranslation("common");
+
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [email, setEmail] = useState("");
@@ -52,14 +55,14 @@ export function CreateGarageForm() {
     setDone(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError(t("garageRegister.passwordsDoNotMatch"));
       return;
     }
 
     setSaving(true);
     try {
       const dto = await registerGarage({ name, city, email, username, password });
-      setDone(`Registered. Status: ${dto.status}. Wait for admin approval.`);
+      setDone(t("garageRegister.registeredPending", { status: String(dto.status ?? "") }));
 
       setName("");
       setCity("");
@@ -68,7 +71,7 @@ export function CreateGarageForm() {
       setPassword("");
       setConfirmPassword("");
     } catch (err: any) {
-      setError(err?.message ?? "Failed to register garage");
+      setError(err?.message ?? t("garageRegister.failedToRegister"));
     } finally {
       setSaving(false);
     }
@@ -76,40 +79,42 @@ export function CreateGarageForm() {
 
   return (
     <Box
-    sx={{
-      height: "100%",          
-      width: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-       overflowX: "hidden",
-    overflowY: { xs: "auto", md: "hidden" },    
-      px: 2,
-      py: 2,                  
-      bgcolor: "background.default",
-    }}
-  >
-    <Card
-      elevation={0}
       sx={{
+        height: "100%",
         width: "100%",
-        maxWidth: 520,
-        borderRadius: 3,
-        border: "1px solid",
-        borderColor: "grey.200",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflowX: "hidden",
+        overflowY: { xs: "auto", md: "hidden" },
+        px: 2,
+        py: 2,
+        bgcolor: "background.default",
       }}
     >
+      <Card
+        elevation={0}
+        sx={{
+          width: "100%",
+          maxWidth: 520,
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "grey.200",
+        }}
+      >
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           <Stack spacing={2}>
             <Box>
               <Typography variant="h4" fontWeight={800}>
-                CarService
+                {t("app.title")}
               </Typography>
+
               <Typography variant="subtitle1" fontWeight={700} sx={{ mt: 0.5 }}>
-                Garage Registration
+                {t("garageRegister.title")}
               </Typography>
+
               <Typography variant="body2" color="text.secondary">
-                After registration, your account stays pending until admin approval.
+                {t("garageRegister.subtitle")}
               </Typography>
             </Box>
 
@@ -120,14 +125,14 @@ export function CreateGarageForm() {
               <Stack spacing={2}>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                   <TextField
-                    label="Garage name"
+                    label={t("garageRegister.fields.garageName")}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     fullWidth
                     required
                   />
                   <TextField
-                    label="City"
+                    label={t("garageRegister.fields.city")}
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     fullWidth
@@ -136,7 +141,7 @@ export function CreateGarageForm() {
                 </Stack>
 
                 <TextField
-                  label="Email"
+                  label={t("garageRegister.fields.email")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
@@ -145,7 +150,7 @@ export function CreateGarageForm() {
                 />
 
                 <TextField
-                  label="Username"
+                  label={t("garageRegister.fields.username")}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   fullWidth
@@ -154,7 +159,7 @@ export function CreateGarageForm() {
 
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                   <TextField
-                    label="Password"
+                    label={t("garageRegister.fields.password")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     type={showPw ? "text" : "password"}
@@ -163,7 +168,11 @@ export function CreateGarageForm() {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton onClick={() => setShowPw((s) => !s)} edge="end">
+                          <IconButton
+                            onClick={() => setShowPw((s) => !s)}
+                            edge="end"
+                            aria-label={t("common.togglePasswordVisibility")}
+                          >
                             {showPw ? <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
                           </IconButton>
                         </InputAdornment>
@@ -172,18 +181,22 @@ export function CreateGarageForm() {
                   />
 
                   <TextField
-                    label="Confirm password"
+                    label={t("garageRegister.fields.confirmPassword")}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     type={showPw2 ? "text" : "password"}
                     fullWidth
                     required
                     error={pwMismatch}
-                    helperText={pwMismatch ? "Passwords do not match" : " "}
+                    helperText={pwMismatch ? t("garageRegister.passwordsDoNotMatch") : " "}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton onClick={() => setShowPw2((s) => !s)} edge="end">
+                          <IconButton
+                            onClick={() => setShowPw2((s) => !s)}
+                            edge="end"
+                            aria-label={t("common.togglePasswordVisibility")}
+                          >
                             {showPw2 ? <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
                           </IconButton>
                         </InputAdornment>
@@ -200,9 +213,8 @@ export function CreateGarageForm() {
                   disabled={!canSubmit}
                   startIcon={saving ? <CircularProgress size={18} /> : undefined}
                 >
-                  {saving ? "Registering..." : "Register"}
+                  {saving ? t("garageRegister.registering") : t("garageRegister.register")}
                 </Button>
-
               </Stack>
             </Box>
           </Stack>

@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { GarageDto } from "../../garages/model/types";
-import {
-  approveGarage,
-  rejectGarage,
-  getGarages,
-} from "../api/adminApi";
+import { approveGarage, rejectGarage, getGarages } from "../api/adminApi";
 
 import {
   Alert,
@@ -37,29 +33,24 @@ import {
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
+import { useTranslation } from "react-i18next";
 
 type ActionType = "approve" | "reject";
 type FilterStatus = "pending" | "approved" | "rejected" | "all";
 
-function normalizeStatus(raw: any): "Pending" | "Approved" | "Rejected" | "Unknown" {
+function normalizeStatus(raw: any): "pending" | "approved" | "rejected" | "unknown" {
   const s = String(raw ?? "").toLowerCase();
-  if (s.includes("pending")) return "Pending";
-  if (s.includes("approved") || s.includes("accept")) return "Approved";
-  if (s.includes("rejected") || s.includes("declined") || s.includes("reject")) return "Rejected";
-  return "Unknown";
-}
-
-function statusChipProps(status: "Pending" | "Approved" | "Rejected" | "Unknown") {
-  if (status === "Pending") return { label: "Pending", color: "warning" as const };
-  if (status === "Approved") return { label: "Approved", color: "success" as const };
-  if (status === "Rejected") return { label: "Rejected", color: "error" as const };
-  return { label: "Unknown", color: "default" as const };
+  if (s.includes("pending")) return "pending";
+  if (s.includes("approved") || s.includes("accept")) return "approved";
+  if (s.includes("rejected") || s.includes("declined") || s.includes("reject")) return "rejected";
+  return "unknown";
 }
 
 export function PendingGaragesPage() {
+  const { t } = useTranslation("common");
+
   const [items, setItems] = useState<GarageDto[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [filter, setFilter] = useState<FilterStatus>("pending");
 
   const [snack, setSnack] = useState<{
@@ -74,16 +65,23 @@ export function PendingGaragesPage() {
     garage: GarageDto | null;
   }>({ open: false, action: null, garage: null });
 
+  const statusChipProps = (status: "pending" | "approved" | "rejected" | "unknown") => {
+    if (status === "pending") return { label: t("status.pending"), color: "warning" as const };
+    if (status === "approved") return { label: t("status.approved"), color: "success" as const };
+    if (status === "rejected") return { label: t("status.rejected"), color: "error" as const };
+    return { label: t("status.unknown"), color: "default" as const };
+  };
+
   const load = async (status: FilterStatus = filter) => {
     setLoading(true);
     try {
-      const data = await getGarages(status);  
+      const data = await getGarages(status);
       setItems(data);
     } catch (e: any) {
       setSnack({
         open: true,
         severity: "error",
-        message: e?.message ?? "Failed to load garages",
+        message: e?.message ?? t("admin.garages.loadFail"),
       });
     } finally {
       setLoading(false);
@@ -117,7 +115,10 @@ export function PendingGaragesPage() {
       setSnack({
         open: true,
         severity: "success",
-        message: action === "approve" ? `Approved: ${garage.name}` : `Rejected: ${garage.name}`,
+        message:
+          action === "approve"
+            ? t("admin.garages.approvedSnack", { name: garage.name })
+            : t("admin.garages.rejectedSnack", { name: garage.name }),
       });
 
       await load(filter);
@@ -125,7 +126,7 @@ export function PendingGaragesPage() {
       setSnack({
         open: true,
         severity: "error",
-        message: e?.message ?? "Action failed",
+        message: e?.message ?? t("common.actionFailed"),
       });
       setLoading(false);
     }
@@ -133,19 +134,25 @@ export function PendingGaragesPage() {
 
   const rows = useMemo(() => items, [items]);
 
+  const confirmTitle =
+    confirm.action === "approve" ? t("admin.garages.confirmApproveTitle") : t("admin.garages.confirmRejectTitle");
+
+  const confirmActionText =
+    confirm.action === "approve" ? t("common.approve").toLowerCase() : t("common.reject").toLowerCase();
+
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
         <Box>
           <Typography variant="h4" fontWeight={800}>
-            Garages
+            {t("admin.garages.title")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Review registrations and manage approval status.
+            {t("admin.garages.subtitle")}
           </Typography>
         </Box>
 
-        <Tooltip title="Refresh">
+        <Tooltip title={t("common.refresh")}>
           <span>
             <IconButton onClick={() => void load(filter)} disabled={loading} aria-label="refresh">
               <RefreshOutlinedIcon />
@@ -161,20 +168,13 @@ export function PendingGaragesPage() {
         variant="scrollable"
         allowScrollButtonsMobile
       >
-        <Tab value="pending" label="Pending" />
-        <Tab value="approved" label="Approved" />
-        <Tab value="rejected" label="Rejected" />
-        <Tab value="all" label="All" />
+        <Tab value="pending" label={t("admin.garages.tabPending")} />
+        <Tab value="approved" label={t("admin.garages.tabApproved")} />
+        <Tab value="rejected" label={t("admin.garages.tabRejected")} />
+        <Tab value="all" label={t("admin.garages.tabAll")} />
       </Tabs>
 
-      <Paper
-        variant="outlined"
-        sx={{
-          borderRadius: 3,
-          overflow: "hidden",
-          position: "relative",
-        }}
-      >
+      <Paper variant="outlined" sx={{ borderRadius: 3, overflow: "hidden", position: "relative" }}>
         {loading && (
           <Box
             sx={{
@@ -195,13 +195,13 @@ export function PendingGaragesPage() {
           <Table stickyHeader aria-label="garages table">
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: 800 }}>Garage</TableCell>
-                <TableCell sx={{ fontWeight: 800 }}>City</TableCell>
-                <TableCell sx={{ fontWeight: 800 }}>Email</TableCell>
-                <TableCell sx={{ fontWeight: 800 }}>Username</TableCell>
-                <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>{t("admin.garages.table.garage")}</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>{t("admin.garages.table.city")}</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>{t("admin.garages.table.email")}</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>{t("admin.garages.table.username")}</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>{t("admin.garages.table.status")}</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 800, width: 220 }}>
-                  Actions
+                  {t("common.actions")}
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -211,9 +211,9 @@ export function PendingGaragesPage() {
                 <TableRow>
                   <TableCell colSpan={6}>
                     <Box sx={{ py: 4, textAlign: "center" }}>
-                      <Typography fontWeight={700}>No garages</Typography>
+                      <Typography fontWeight={700}>{t("admin.garages.emptyTitle")}</Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Nothing to show for this filter.
+                        {t("admin.garages.emptySubtitle")}
                       </Typography>
                     </Box>
                   </TableCell>
@@ -239,7 +239,7 @@ export function PendingGaragesPage() {
                       </TableCell>
 
                       <TableCell align="right">
-                        {status === "Pending" ? (
+                        {status === "pending" ? (
                           <Stack direction="row" spacing={1} justifyContent="flex-end">
                             <Button
                               variant="contained"
@@ -248,7 +248,7 @@ export function PendingGaragesPage() {
                               onClick={() => openConfirm("approve", g)}
                               disabled={loading}
                             >
-                              Approve
+                              {t("common.approve")}
                             </Button>
                             <Button
                               variant="outlined"
@@ -258,7 +258,7 @@ export function PendingGaragesPage() {
                               onClick={() => openConfirm("reject", g)}
                               disabled={loading}
                             >
-                              Reject
+                              {t("common.reject")}
                             </Button>
                           </Stack>
                         ) : (
@@ -276,37 +276,27 @@ export function PendingGaragesPage() {
         </TableContainer>
       </Paper>
 
-      {/* Confirm Dialog */}
       <Dialog open={confirm.open} onClose={closeConfirm}>
-        <DialogTitle>
-          {confirm.action === "approve" ? "Approve garage?" : "Reject garage?"}
-        </DialogTitle>
+        <DialogTitle>{confirmTitle}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {confirm.garage ? (
-              <>
-                Are you sure you want to{" "}
-                <b>{confirm.action === "approve" ? "approve" : "reject"}</b>{" "}
-                <b>{confirm.garage.name}</b> ({confirm.garage.city})?
-              </>
-            ) : (
-              "Are you sure?"
-            )}
+            {confirm.garage
+              ? t("admin.garages.confirmBody", {
+                  action: confirmActionText,
+                  name: confirm.garage.name,
+                  city: confirm.garage.city,
+                })
+              : t("common.areYouSure")}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeConfirm}>Cancel</Button>
-          <Button
-            onClick={runAction}
-            variant="contained"
-            color={confirm.action === "approve" ? "primary" : "error"}
-          >
-            {confirm.action === "approve" ? "Approve" : "Reject"}
+          <Button onClick={closeConfirm}>{t("common.cancel")}</Button>
+          <Button onClick={runAction} variant="contained" color={confirm.action === "approve" ? "primary" : "error"}>
+            {confirm.action === "approve" ? t("common.approve") : t("common.reject")}
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar */}
       <Snackbar
         open={snack.open}
         autoHideDuration={3000}

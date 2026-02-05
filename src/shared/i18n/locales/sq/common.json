@@ -1,0 +1,199 @@
+{
+  "common": {
+    "refresh": "Rifresko",
+    "loading": "Duke u ngarkuar...",
+    "cancel": "Anulo",
+    "close": "Mbyll",
+    "create": "Krijo",
+    "creating": "Duke krijuar...",
+    "saving": "Duke ruajtur...",
+    "loginRequired": "Kërkohet hyrja",
+    "togglePasswordVisibility": "Shfaq/Fsheh fjalëkalimin",
+    "back": "Kthehu",
+    "search": "Kërko",
+    "searching": "Duke kërkuar..."
+  },
+  "status": {
+    "pending": "Në pritje",
+    "approved": "Aprovuar",
+    "rejected": "Refuzuar",
+    "unknown": "E panjohur"
+  },
+  "admin": {
+    "garages": {
+      "title": "Serviset",
+      "subtitle": "Shqyrto regjistrimet dhe menaxho statusin e aprovimit.",
+      "tabPending": "Në pritje",
+      "tabApproved": "Aprovuar",
+      "tabRejected": "Refuzuar",
+      "tabAll": "Të gjitha",
+      "loadFail": "Nuk u arrit të ngarkohen serviset",
+      "approvedSnack": "U aprovua: {{name}}",
+      "rejectedSnack": "U refuzua: {{name}}",
+      "table": {
+        "garage": "Servisi",
+        "city": "Qyteti",
+        "email": "Email",
+        "username": "Përdoruesi",
+        "status": "Statusi"
+      },
+      "emptyTitle": "S’ka servise",
+      "emptySubtitle": "Nuk ka asgjë për këtë filtër.",
+      "confirmApproveTitle": "Të aprovohet servisi?",
+      "confirmRejectTitle": "Të refuzohet servisi?",
+      "confirmBody": "A je i sigurt që dëshiron ta {{action}} {{name}} ({{city}})?"
+    }
+  },
+  "auth": {
+    "garageLoginTitle": "Hyrja e servisit",
+    "garageLoginSubtitle": "Hyni për të menaxhuar veturat dhe shërbimet.",
+    "username": "Përdoruesi",
+    "password": "Fjalëkalimi",
+    "togglePasswordVisibility": "Shfaq/Fsheh fjalëkalimin",
+    "login": "Hyr",
+    "loggingIn": "Duke u kyçur...",
+    "loginFailed": "Hyrja dështoi. Ju lutem provoni përsëri.",
+    "waitForApprovalHint": "Nëse u regjistruat tani, mund të duhet të prisni aprovimin nga administratori."
+  },
+  "garageCars": {
+    "title": "Veturat e mia",
+    "loggedInAs": "I kyçur si {{name}}",
+    "addCar": "Shto veturë",
+    "history": "Historia",
+    "addService": "Shto servis",
+    "noGarageLoggedIn": "Asnjë servis nuk është i kyçur.",
+    "failedToLoadCars": "Nuk u arrit të ngarkohen veturat.",
+    "noCarsYet": "Ende s’ka vetura.",
+    "columns": {
+      "plate": "Targat",
+      "vin": "VIN",
+      "created": "Krijuar",
+      "services": "Serviset",
+      "qr": "QR",
+      "actions": "Veprime"
+    },
+    "tooltips": {
+      "history": "Shiko historinë e serviseve",
+      "showQr": "Shfaq kodin QR",
+      "addService": "Shto një servis"
+    },
+    "addCarTitle": "Shto veturë",
+    "plateLabel": "Numri i targave",
+    "vinLabel": "VIN (17 karaktere)",
+    "vinHelper": "VIN duhet të jetë saktësisht 17 karaktere",
+    "vinRequired": "VIN është i detyrueshëm.",
+    "vinMustBe17": "VIN duhet të jetë saktësisht 17 karaktere.",
+    "plateRequired": "Targat janë të detyrueshme.",
+    "failedToCreateCar": "Nuk u arrit të krijohet vetura.",
+    "addServiceTitle": "Shto servis",
+    "carLabel": "Vetura:",
+    "serviceDateLabel": "Data e servisit",
+    "mileageLabel": "Kilometrazha (km)",
+    "notesLabel": "Shënime (opsionale)",
+    "carMissing": "Vetura mungon.",
+    "mileageInvalid": "Kilometrazha duhet të jetë numër i vlefshëm dhe jo negativ.",
+    "failedToAddService": "Nuk u arrit të shtohet servisi.",
+    "saveService": "Ruaj servis",
+    "qrTitle": "Kodi QR",
+    "qrAlt": "QR i veturës",
+    "failedToLoadQr": "Nuk u arrit të ngarkohet QR.",
+    "downloadPng": "Shkarko PNG"
+  },
+  "garageRegister": {
+    "title": "Regjistrimi i servisit",
+    "subtitle": "Pas regjistrimit, llogaria mbetet në pritje derisa administratori ta aprovojë.",
+    "fields": {
+      "garageName": "Emri i servisit",
+      "city": "Qyteti",
+      "email": "Email",
+      "username": "Përdoruesi",
+      "password": "Fjalëkalimi",
+      "confirmPassword": "Konfirmo fjalëkalimin"
+    },
+    "register": "Regjistrohu",
+    "registering": "Duke u regjistruar...",
+    "passwordsDoNotMatch": "Fjalëkalimet nuk përputhen.",
+    "failedToRegister": "Nuk u arrit regjistrimi i servisit.",
+    "registeredPending": "U regjistrua. Statusi: {{status}}. Prisni aprovimin e administratorit."
+  },
+  "app": {
+    "title": "CarService"
+  },
+  "owner": {
+    "scan": {
+      "title": "Skano QR",
+      "tip": "Kamera kërkon HTTPS në prodhim. Localhost funksionon në dev.",
+      "errors": {
+        "cameraDenied": "Leja e kamerës u refuzua ose nuk është e disponueshme."
+      }
+    },
+    "history": {
+      "title": "Historia e serviseve",
+      "vin": "VIN",
+      "token": "Token",
+      "plate": "Targat",
+      "empty": "Nuk u gjetën servise.",
+      "actions": {
+        "download": "Shkarko raportin"
+      },
+      "errors": {
+        "loadFailed": "Nuk u arrit të ngarkohet historia."
+      },
+      "table": {
+        "garage": "Servisi",
+        "date": "Data",
+        "mileage": "Kilometrazha",
+        "notes": "Shënime",
+        "created": "Krijuar"
+      },
+      "pdf": {
+        "title": "Raporti i historisë së serviseve",
+        "reportDate": "Data e raportit",
+        "plate": "Targat",
+        "vin": "VIN"
+      }
+    },
+    "home": {
+      "title": "Historia e veturës",
+      "subtitle": "Kontrollo historinë e serviseve me VIN ose QR.",
+      "actions": {
+        "byVin": "Kontrollo me VIN",
+        "byQr": "Kontrollo me QR"
+      },
+      "fields": {
+        "vin": "Shkruaj VIN"
+      },
+      "tip": "Këshillë: skanimi QR funksionon më mirë në telefon (HTTPS kërkohet për kamerën).",
+      "errors": {
+        "searchFailed": "Kërkimi dështoi."
+      }
+    }
+  },
+     "carServices": {
+    "title": "Historia e serviseve",
+    "loggedInAs": "I kyçur si",
+    "carIdLabel": "CarId:",
+    "addService": "Shto servis",
+    "noGarageLoggedIn": "Asnjë servis nuk është i kyçur.",
+    "carIdMissingFromUrl": "CarId mungon në URL.",
+    "failedToLoadHistory": "Nuk u arrit të ngarkohet historia e serviseve",
+    "mustLoginFirst": "Duhet të kyçeni fillimisht.",
+    "carIdMissing": "CarId mungon.",
+    "mileageInvalid": "Kilometrazha duhet të jetë numër i vlefshëm dhe jo negativ.",
+    "failedToAddService": "Nuk u arrit të shtohet servisi",
+    "empty": "Ende nuk ka servise.",
+    "table": {
+      "date": "Data",
+      "mileage": "Kilometrazha",
+      "notes": "Shënime",
+      "created": "Krijuar"
+    },
+    "dialog": {
+      "title": "Shto servis",
+      "serviceDate": "Data e servisit",
+      "mileage": "Kilometrazha (km)",
+      "notes": "Shënime (opsionale)",
+      "saveService": "Ruaj servis"
+    }
+  }
+}

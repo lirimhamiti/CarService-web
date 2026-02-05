@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSession } from "../../auth/model/session";
+import { useTranslation } from "react-i18next";
 
 import {
   Alert,
@@ -38,9 +39,10 @@ import {
   getCarServices,
   type CreateServiceRequest,
   type ServiceDto,
-} from "../servicesApi"; 
+} from "../servicesApi";
 
 export function CarServicesPageHistory() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { carId } = useParams<{ carId: string }>();
 
@@ -57,7 +59,7 @@ export function CarServicesPageHistory() {
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`; 
+    return `${yyyy}-${mm}-${dd}`;
   });
   const [mileage, setMileage] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
@@ -84,13 +86,13 @@ export function CarServicesPageHistory() {
     if (!garageId) {
       setItems([]);
       setLoading(false);
-      setError("No garage logged in.");
+      setError(t("carServices.noGarageLoggedIn"));
       return;
     }
     if (!carId) {
       setItems([]);
       setLoading(false);
-      setError("CarId missing from URL.");
+      setError(t("carServices.carIdMissingFromUrl"));
       return;
     }
 
@@ -101,7 +103,7 @@ export function CarServicesPageHistory() {
       );
       setItems(sorted);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load service history");
+      setError(e?.message ?? t("carServices.failedToLoadHistory"));
     } finally {
       setLoading(false);
     }
@@ -135,17 +137,17 @@ export function CarServicesPageHistory() {
     setSaveError(null);
 
     if (!garageId) {
-      setSaveError("You must login first.");
+      setSaveError(t("carServices.mustLoginFirst"));
       return;
     }
     if (!carId) {
-      setSaveError("CarId missing.");
+      setSaveError(t("carServices.carIdMissing"));
       return;
     }
 
     const mileageNum = Number(mileage);
     if (!Number.isFinite(mileageNum) || mileageNum < 0) {
-      setSaveError("Mileage must be a valid non-negative number.");
+      setSaveError(t("carServices.mileageInvalid"));
       return;
     }
 
@@ -162,7 +164,7 @@ export function CarServicesPageHistory() {
       setOpen(false);
       await load();
     } catch (err: any) {
-      setSaveError(err?.message ?? "Failed to add service record");
+      setSaveError(err?.message ?? t("carServices.failedToAddService"));
     } finally {
       setSaving(false);
     }
@@ -173,18 +175,18 @@ export function CarServicesPageHistory() {
       <Stack spacing={2}>
         <Box>
           <Typography variant="h4" fontWeight={800}>
-            Service History
+            {t("carServices.title")}
           </Typography>
 
           {session && (
             <Typography variant="body2" color="text.secondary">
-              Logged in as <b>{session.name}</b>
+              {t("carServices.loggedInAs")} <b>{session.name}</b>
             </Typography>
           )}
 
           {carId && (
             <Typography variant="body2" color="text.secondary">
-              CarId: <b>{carId}</b>
+              {t("carServices.carIdLabel")} <b>{carId}</b>
             </Typography>
           )}
         </Box>
@@ -197,7 +199,7 @@ export function CarServicesPageHistory() {
               onClick={openDialog}
               disabled={!garageId || !carId}
             >
-              Add service
+              {t("carServices.addService")}
             </Button>
 
             <Button
@@ -206,7 +208,7 @@ export function CarServicesPageHistory() {
               onClick={load}
               disabled={loading}
             >
-              Refresh
+              {t("common.refresh")}
             </Button>
           </Stack>
 
@@ -215,7 +217,7 @@ export function CarServicesPageHistory() {
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate("/garage/cars")}
           >
-            Back
+            {t("common.back")}
           </Button>
         </Stack>
 
@@ -226,19 +228,19 @@ export function CarServicesPageHistory() {
             {loading ? (
               <Stack direction="row" spacing={2} alignItems="center">
                 <CircularProgress size={20} />
-                <Typography>Loading...</Typography>
+                <Typography>{t("common.loading")}</Typography>
               </Stack>
             ) : items.length === 0 ? (
-              <Typography color="text.secondary">No service records yet.</Typography>
+              <Typography color="text.secondary">{t("carServices.empty")}</Typography>
             ) : (
               <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid", borderColor: "grey.200" }}>
                 <Table size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell><b>Date</b></TableCell>
-                      <TableCell><b>Mileage</b></TableCell>
-                      <TableCell><b>Notes</b></TableCell>
-                      <TableCell><b>Created</b></TableCell>
+                      <TableCell><b>{t("carServices.table.date")}</b></TableCell>
+                      <TableCell><b>{t("carServices.table.mileage")}</b></TableCell>
+                      <TableCell><b>{t("carServices.table.notes")}</b></TableCell>
+                      <TableCell><b>{t("carServices.table.created")}</b></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -264,10 +266,9 @@ export function CarServicesPageHistory() {
         </Card>
       </Stack>
 
-      {/* ✅ Add Service Dialog */}
       <Dialog open={open} onClose={closeDialog} fullWidth maxWidth="sm">
         <DialogTitle sx={{ pr: 6 }}>
-          Add Service Record
+          {t("carServices.dialog.title")}
           <IconButton
             onClick={closeDialog}
             sx={{ position: "absolute", right: 8, top: 8 }}
@@ -281,7 +282,7 @@ export function CarServicesPageHistory() {
         <DialogContent dividers>
           <Stack spacing={2} component="form" onSubmit={submit}>
             <Typography variant="body2" color="text.secondary">
-              CarId: <b>{carId ?? "-"}</b>
+              {t("carServices.carIdLabel")} <b>{carId ?? "-"}</b>
             </Typography>
 
             <Divider />
@@ -289,7 +290,7 @@ export function CarServicesPageHistory() {
             {saveError && <Alert severity="error">{saveError}</Alert>}
 
             <TextField
-              label="Service date"
+              label={t("carServices.dialog.serviceDate")}
               type="date"
               value={serviceDate}
               onChange={(e) => setServiceDate(e.target.value)}
@@ -299,7 +300,7 @@ export function CarServicesPageHistory() {
             />
 
             <TextField
-              label="Mileage (km)"
+              label={t("carServices.dialog.mileage")}
               value={mileage}
               onChange={(e) => setMileage(e.target.value)}
               fullWidth
@@ -308,7 +309,7 @@ export function CarServicesPageHistory() {
             />
 
             <TextField
-              label="Notes (optional)"
+              label={t("carServices.dialog.notes")}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               fullWidth
@@ -316,17 +317,16 @@ export function CarServicesPageHistory() {
               minRows={3}
             />
 
-            {/* hidden submit so Enter works */}
             <button type="submit" style={{ display: "none" }} />
           </Stack>
         </DialogContent>
 
         <DialogActions>
           <Button onClick={closeDialog} disabled={saving}>
-            Cancel
+            {t("common.cancel")}
           </Button>
 
-          <Tooltip title={!garageId ? "Login required" : ""}>
+          <Tooltip title={!garageId ? t("common.loginRequired") : ""}>
             <span>
               <Button
                 variant="contained"
@@ -334,7 +334,7 @@ export function CarServicesPageHistory() {
                 disabled={!canSave}
                 startIcon={saving ? <CircularProgress size={18} /> : undefined}
               >
-                {saving ? "Saving..." : "Save service"}
+                {saving ? t("common.saving") : t("carServices.dialog.saveService")}
               </Button>
             </span>
           </Tooltip>

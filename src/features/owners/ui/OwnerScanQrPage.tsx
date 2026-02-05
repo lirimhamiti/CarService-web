@@ -3,8 +3,10 @@ import { Alert, Box, Button, Card, CardContent, Stack, Typography } from "@mui/m
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import QrScanner from "qr-scanner";
+import { useTranslation } from "react-i18next";
 
 export function OwnerScanQrPage() {
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const scannerRef = useRef<QrScanner | null>(null);
@@ -29,7 +31,7 @@ export function OwnerScanQrPage() {
     scannerRef.current = scanner;
 
     scanner.start().catch(() => {
-      setError("Camera permission denied or not available.");
+      setError(t("owner.scan.errors.cameraDenied"));
     });
 
     return () => {
@@ -37,15 +39,24 @@ export function OwnerScanQrPage() {
       scanner.destroy();
       scannerRef.current = null;
     };
-  }, [navigate]);
+  }, [navigate, t]);
+
   return (
     <Box sx={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", px: 2 }}>
-      <Card sx={{ width: "100%", maxWidth: 520, borderRadius: 3, border: "1px solid", borderColor: "grey.200" }} elevation={0}>
+      <Card
+        sx={{ width: "100%", maxWidth: 520, borderRadius: 3, border: "1px solid", borderColor: "grey.200" }}
+        elevation={0}
+      >
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           <Stack spacing={2}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="h5" fontWeight={800}>Scan QR</Typography>
-              <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/owner")}>Back</Button>
+              <Typography variant="h5" fontWeight={800}>
+                {t("owner.scan.title")}
+              </Typography>
+
+              <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/owner")}>
+                {t("common.back")}
+              </Button>
             </Stack>
 
             {error && <Alert severity="error">{error}</Alert>}
@@ -55,7 +66,7 @@ export function OwnerScanQrPage() {
             </Box>
 
             <Typography variant="caption" color="text.secondary">
-              Camera requires HTTPS in production. Localhost works in dev.
+              {t("owner.scan.tip")}
             </Typography>
           </Stack>
         </CardContent>

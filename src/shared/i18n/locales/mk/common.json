@@ -1,0 +1,199 @@
+{
+  "common": {
+    "refresh": "Освежи",
+    "loading": "Се вчитува...",
+    "cancel": "Откажи",
+    "close": "Затвори",
+    "create": "Креирај",
+    "creating": "Се креира...",
+    "saving": "Се зачувува...",
+    "loginRequired": "Потребна е најава",
+    "togglePasswordVisibility": "Прикажи/Сокриј лозинка",
+    "back": "Назад",
+    "search": "Пребарај",
+    "searching": "Се пребарува..."
+  },
+  "status": {
+    "pending": "Во чекање",
+    "approved": "Одобрено",
+    "rejected": "Одбиено",
+    "unknown": "Непознато"
+  },
+  "admin": {
+    "garages": {
+      "title": "Сервиси",
+      "subtitle": "Прегледај регистрации и управувај со статусот на одобрување.",
+      "tabPending": "Во чекање",
+      "tabApproved": "Одобрено",
+      "tabRejected": "Одбиено",
+      "tabAll": "Сите",
+      "loadFail": "Не успеа вчитувањето на сервисите",
+      "approvedSnack": "Одобрено: {{name}}",
+      "rejectedSnack": "Одбиено: {{name}}",
+      "table": {
+        "garage": "Сервис",
+        "city": "Град",
+        "email": "Е-пошта",
+        "username": "Корисничко име",
+        "status": "Статус"
+      },
+      "emptyTitle": "Нема сервиси",
+      "emptySubtitle": "Нема податоци за овој филтер.",
+      "confirmApproveTitle": "Да се одобри сервисот?",
+      "confirmRejectTitle": "Да се одбие сервисот?",
+      "confirmBody": "Дали сигурно сакаш да {{action}} {{name}} ({{city}})?"
+    }
+  },
+  "auth": {
+    "garageLoginTitle": "Најава за сервис",
+    "garageLoginSubtitle": "Најави се за да ги управуваш возилата и сервисните записи.",
+    "username": "Корисничко име",
+    "password": "Лозинка",
+    "togglePasswordVisibility": "Прикажи/Сокриј лозинка",
+    "login": "Најави се",
+    "loggingIn": "Се најавува...",
+    "loginFailed": "Најавата не успеа. Обиди се повторно.",
+    "waitForApprovalHint": "Ако штотуку се регистрираше, можеби треба да почекаш админ одобрување."
+  },
+  "garageCars": {
+    "title": "Мои возила",
+    "loggedInAs": "Најавен како {{name}}",
+    "addCar": "Додај возило",
+    "history": "Историја",
+    "addService": "Додај сервис",
+    "noGarageLoggedIn": "Нема најавен сервис.",
+    "failedToLoadCars": "Не успеа вчитување на возилата.",
+    "noCarsYet": "Сѐ уште нема возила.",
+    "columns": {
+      "plate": "Таблички",
+      "vin": "VIN",
+      "created": "Креирано",
+      "services": "Сервиси",
+      "qr": "QR",
+      "actions": "Акции"
+    },
+    "tooltips": {
+      "history": "Провери сервисна историја",
+      "showQr": "Прикажи QR код",
+      "addService": "Додај сервисен запис"
+    },
+    "addCarTitle": "Додај возило",
+    "plateLabel": "Број на таблички",
+    "vinLabel": "VIN (17 знаци)",
+    "vinHelper": "VIN мора да има точно 17 знаци",
+    "vinRequired": "VIN е задолжителен.",
+    "vinMustBe17": "VIN мора да има точно 17 знаци.",
+    "plateRequired": "Табличките се задолжителни.",
+    "failedToCreateCar": "Не успеа креирање на возилото.",
+    "addServiceTitle": "Додај сервисен запис",
+    "carLabel": "Возило:",
+    "serviceDateLabel": "Датум на сервис",
+    "mileageLabel": "Километража (км)",
+    "notesLabel": "Забелешки (опционално)",
+    "carMissing": "Недостасува возилото.",
+    "mileageInvalid": "Километражата мора да биде валиден не-негативен број.",
+    "failedToAddService": "Не успеа додавање на сервисен запис.",
+    "saveService": "Зачувај сервис",
+    "qrTitle": "QR код",
+    "qrAlt": "QR за возило",
+    "failedToLoadQr": "Не успеа вчитување на QR.",
+    "downloadPng": "Преземи PNG"
+  },
+  "garageRegister": {
+    "title": "Регистрација на сервис",
+    "subtitle": "По регистрацијата, сметката останува во чекање додека админот не ја одобри.",
+    "fields": {
+      "garageName": "Име на сервис",
+      "city": "Град",
+      "email": "Е-пошта",
+      "username": "Корисничко име",
+      "password": "Лозинка",
+      "confirmPassword": "Потврди лозинка"
+    },
+    "register": "Регистрирај",
+    "registering": "Се регистрира...",
+    "passwordsDoNotMatch": "Лозинките не се совпаѓаат.",
+    "failedToRegister": "Не успеа регистрацијата на сервисот.",
+    "registeredPending": "Регистрирано. Статус: {{status}}. Почекај админ одобрување."
+  },
+  "app": {
+    "title": "CarService"
+  },
+  "owner": {
+    "scan": {
+      "title": "Скенирај QR",
+      "tip": "Камерата бара HTTPS во продукција. Localhost работи во dev.",
+      "errors": {
+        "cameraDenied": "Дозволата за камера е одбиена или не е достапна."
+      }
+    },
+    "history": {
+      "title": "Сервисна историја",
+      "vin": "VIN",
+      "token": "Токен",
+      "plate": "Таблички",
+      "empty": "Нема пронајдени сервисни записи.",
+      "actions": {
+        "download": "Преземи извештај"
+      },
+      "errors": {
+        "loadFailed": "Не успеа вчитување на историјата."
+      },
+      "table": {
+        "garage": "Сервис",
+        "date": "Датум",
+        "mileage": "Километража",
+        "notes": "Забелешки",
+        "created": "Креирано"
+      },
+      "pdf": {
+        "title": "Извештај за сервисна историја",
+        "reportDate": "Датум на извештај",
+        "plate": "Таблички",
+        "vin": "VIN"
+      }
+    },
+    "home": {
+      "title": "Историја на возило",
+      "subtitle": "Провери ја сервисната историја преку VIN или QR код.",
+      "actions": {
+        "byVin": "Провери со VIN",
+        "byQr": "Провери со QR"
+      },
+      "fields": {
+        "vin": "Внеси VIN"
+      },
+      "tip": "Совет: QR скенирањето е најдобро на мобилен (HTTPS е потребен за камера).",
+      "errors": {
+        "searchFailed": "Пребарувањето не успеа."
+      }
+    }
+  },
+  "carServices": {
+    "title": "Сервисна историја",
+    "loggedInAs": "Најавен како",
+    "carIdLabel": "CarId:",
+    "addService": "Додај сервис",
+    "noGarageLoggedIn": "Нема најавен сервис.",
+    "carIdMissingFromUrl": "CarId недостасува во URL.",
+    "failedToLoadHistory": "Не успеа вчитување на сервисната историја",
+    "mustLoginFirst": "Мора прво да се најавиш.",
+    "carIdMissing": "CarId недостасува.",
+    "mileageInvalid": "Километражата мора да биде валиден не-негативен број.",
+    "failedToAddService": "Не успеа додавање на сервисен запис",
+    "empty": "Сѐ уште нема сервисни записи.",
+    "table": {
+      "date": "Датум",
+      "mileage": "Километража",
+      "notes": "Забелешки",
+      "created": "Креирано"
+    },
+    "dialog": {
+      "title": "Додај сервисен запис",
+      "serviceDate": "Датум на сервис",
+      "mileage": "Километража (км)",
+      "notes": "Забелешки (опционално)",
+      "saveService": "Зачувај сервис"
+    }
+  }
+}

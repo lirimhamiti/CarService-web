@@ -30,7 +30,7 @@ import {
 } from "../api/ownerApi";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
+import { useTranslation } from "react-i18next";
 
 function extractToken(input: string) {
   const s = decodeURIComponent(input ?? "").trim();
@@ -39,8 +39,7 @@ function extractToken(input: string) {
     const u = new URL(s);
     const t = u.searchParams.get("token");
     if (t) return t.trim();
-  } catch {
-  }
+  } catch {}
 
   const idx = s.toLowerCase().indexOf("token=");
   if (idx >= 0) {
@@ -52,10 +51,8 @@ function extractToken(input: string) {
   return s;
 }
 
-
-
-
 export function OwnerCarHistoryPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { kind, value } = useParams<{ kind: "vin" | "token"; value: string }>();
 
@@ -94,7 +91,7 @@ export function OwnerCarHistoryPage() {
         setItems(services);
       }
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load history.");
+      setError(e?.message ?? t("owner.history.errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -105,60 +102,66 @@ export function OwnerCarHistoryPage() {
   }, [kind, value]);
 
   const downloadReportPdf = () => {
-  if (!car) return;
+    if (!car) return;
 
-  const today = new Date().toISOString().slice(0, 10);
-  const identifier = (kind === "vin" ? car.vin : titleValue)
-    .replace(/[^a-z0-9_-]/gi, "_")
-    .slice(0, 40);
+    const today = new Date().toISOString().slice(0, 10);
+    const identifier = (kind === "vin" ? car.vin : titleValue)
+      .replace(/[^a-z0-9_-]/gi, "_")
+      .slice(0, 40);
 
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "pt",
-    format: "a4",
-  });
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "pt",
+      format: "a4",
+    });
 
-  doc.setFontSize(18);
-  doc.text("Service History Report", 40, 50);
+    doc.setFontSize(18);
+    doc.text(t("owner.history.pdf.title"), 40, 50);
 
-  doc.setFontSize(11);
-  const metaLines = [
-    `Report Date: ${today}`,
-    `Plate: ${car.plateNumber}`,
-    `VIN: ${car.vin}`,
-  ];
+    doc.setFontSize(11);
+    const metaLines = [
+      `${t("owner.history.pdf.reportDate")}: ${today}`,
+      `${t("owner.history.pdf.plate")}: ${car.plateNumber}`,
+      `${t("owner.history.pdf.vin")}: ${car.vin}`,
+    ];
 
-  let y = 75;
-  for (const line of metaLines) {
-    doc.text(line, 40, y);
-    y += 16;
-  }
+    let y = 75;
+    for (const line of metaLines) {
+      doc.text(line, 40, y);
+      y += 16;
+    }
 
-  const rows = items.map((s) => [
-    `${s.garageName} (${s.garageCity})`,
-    s.serviceDate ? new Date(s.serviceDate).toLocaleDateString() : "-",
-    String(s.mileage ?? "-"),
-    s.notes ?? "-",
-    s.createdAt ? new Date(s.createdAt).toLocaleString() : "-",
-  ]);
+    const rows = items.map((s) => [
+      `${s.garageName} (${s.garageCity})`,
+      s.serviceDate ? new Date(s.serviceDate).toLocaleDateString() : "-",
+      String(s.mileage ?? "-"),
+      s.notes ?? "-",
+      s.createdAt ? new Date(s.createdAt).toLocaleString() : "-",
+    ]);
 
-  autoTable(doc, {
-    startY: y + 10,
-    head: [["Garage", "Date", "Mileage", "Notes"]],
-    body: rows,
-    styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
-    headStyles: { fontStyle: "bold" },
-    columnStyles: {
-      0: { cellWidth: 140 }, 
-      1: { cellWidth: 70 }, 
-      2: { cellWidth: 70 },  
-      3: { cellWidth: 220 }
-    },
-  });
+    autoTable(doc, {
+      startY: y + 10,
+      head: [[
+        t("owner.history.table.garage"),
+        t("owner.history.table.date"),
+        t("owner.history.table.mileage"),
+        t("owner.history.table.notes"),
+        t("owner.history.table.created"),
+      ]],
+      body: rows,
+      styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
+      headStyles: { fontStyle: "bold" },
+      columnStyles: {
+        0: { cellWidth: 140 },
+        1: { cellWidth: 70 },
+        2: { cellWidth: 70 },
+        3: { cellWidth: 160 },
+        4: { cellWidth: 90 },
+      },
+    });
 
-  doc.save(`service-history-${identifier}-${today}.pdf`);
-};
-
+    doc.save(`service-history-${identifier}-${today}.pdf`);
+  };
 
   return (
     <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }}>
@@ -166,14 +169,17 @@ export function OwnerCarHistoryPage() {
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Box>
             <Typography variant="h4" fontWeight={800}>
-              Service History
+              {t("owner.history.title")}
             </Typography>
+
             <Typography variant="body2" color="text.secondary">
-              {kind === "vin" ? "VIN" : "Token"}: <b>{titleValue}</b>
+              {kind === "vin" ? t("owner.history.vin") : t("owner.history.token")}:{" "}
+              <b>{titleValue}</b>
             </Typography>
+
             {car && (
               <Typography variant="body2" color="text.secondary">
-                Plate: <b>{car.plateNumber}</b>
+                {t("owner.history.plate")}: <b>{car.plateNumber}</b>
               </Typography>
             )}
           </Box>
@@ -185,49 +191,79 @@ export function OwnerCarHistoryPage() {
               onClick={downloadReportPdf}
               disabled={loading || !car}
             >
-              Download Report
+              {t("owner.history.actions.download")}
             </Button>
 
-            <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate("/owner")}>
-              Back
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate("/owner")}
+            >
+              {t("common.back")}
             </Button>
-            <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => void load()} disabled={loading}>
-              Refresh
+
+            <Button
+              variant="outlined"
+              startIcon={<RefreshIcon />}
+              onClick={() => void load()}
+              disabled={loading}
+            >
+              {t("common.refresh")}
             </Button>
           </Stack>
         </Stack>
 
         {error && <Alert severity="error">{error}</Alert>}
 
-        <Card elevation={0} sx={{ borderRadius: 3, border: "1px solid", borderColor: "grey.200" }}>
+        <Card
+          elevation={0}
+          sx={{ borderRadius: 3, border: "1px solid", borderColor: "grey.200" }}
+        >
           <CardContent>
             {loading ? (
               <Stack direction="row" spacing={2} alignItems="center">
                 <CircularProgress size={20} />
-                <Typography>Loading...</Typography>
+                <Typography>{t("common.loading")}</Typography>
               </Stack>
             ) : items.length === 0 ? (
-              <Typography color="text.secondary">No service records found.</Typography>
+              <Typography color="text.secondary">
+                {t("owner.history.empty")}
+              </Typography>
             ) : (
-              <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid", borderColor: "grey.200" }}>
+              <TableContainer
+                component={Paper}
+                elevation={0}
+                sx={{ border: "1px solid", borderColor: "grey.200" }}
+              >
                 <Table size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell><b>Garage</b></TableCell>
-                      <TableCell><b>Date</b></TableCell>
-                      <TableCell><b>Mileage</b></TableCell>
-                      <TableCell><b>Notes</b></TableCell>
-                      <TableCell><b>Created</b></TableCell>
+                      <TableCell><b>{t("owner.history.table.garage")}</b></TableCell>
+                      <TableCell><b>{t("owner.history.table.date")}</b></TableCell>
+                      <TableCell><b>{t("owner.history.table.mileage")}</b></TableCell>
+                      <TableCell><b>{t("owner.history.table.notes")}</b></TableCell>
+                      <TableCell><b>{t("owner.history.table.created")}</b></TableCell>
                     </TableRow>
                   </TableHead>
+
                   <TableBody>
                     {items.map((s) => (
                       <TableRow key={s.id} hover>
-                        <TableCell>{s.garageName} ({s.garageCity})</TableCell>
-                        <TableCell>{s.serviceDate ? new Date(s.serviceDate).toLocaleDateString() : "-"}</TableCell>
+                        <TableCell>
+                          {s.garageName} ({s.garageCity})
+                        </TableCell>
+                        <TableCell>
+                          {s.serviceDate
+                            ? new Date(s.serviceDate).toLocaleDateString()
+                            : "-"}
+                        </TableCell>
                         <TableCell>{s.mileage ?? "-"}</TableCell>
                         <TableCell>{s.notes || "-"}</TableCell>
-                        <TableCell>{s.createdAt ? new Date(s.createdAt).toLocaleString() : "-"}</TableCell>
+                        <TableCell>
+                          {s.createdAt
+                            ? new Date(s.createdAt).toLocaleString()
+                            : "-"}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
