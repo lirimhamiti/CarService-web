@@ -1,5 +1,4 @@
 import type { GarageLoginResult } from "../api/authApi";
-// session set and clear for the app
 const KEY = "garage_session";
 
 export function saveSession(data: GarageLoginResult) {

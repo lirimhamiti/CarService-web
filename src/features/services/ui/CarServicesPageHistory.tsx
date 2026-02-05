@@ -38,7 +38,7 @@ import {
   getCarServices,
   type CreateServiceRequest,
   type ServiceDto,
-} from "../servicesApi"; // <-- adjust if your path differs
+} from "../servicesApi"; 
 
 export function CarServicesPageHistory() {
   const navigate = useNavigate();
@@ -51,14 +51,13 @@ export function CarServicesPageHistory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Add Service dialog
   const [open, setOpen] = useState(false);
   const [serviceDate, setServiceDate] = useState<string>(() => {
     const d = new Date();
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`; // YYYY-MM-DD for type="date"
+    return `${yyyy}-${mm}-${dd}`; 
   });
   const [mileage, setMileage] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
@@ -97,7 +96,6 @@ export function CarServicesPageHistory() {
 
     try {
       const data = await getCarServices(garageId, carId);
-      // optional: sort newest first
       const sorted = [...data].sort((a, b) =>
         (b.serviceDate ?? "").localeCompare(a.serviceDate ?? "")
       );
@@ -111,7 +109,6 @@ export function CarServicesPageHistory() {
 
   useEffect(() => {
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [garageId, carId]);
 
   const openDialog = () => {
@@ -163,7 +160,7 @@ export function CarServicesPageHistory() {
       await createService(garageId, carId, body);
 
       setOpen(false);
-      await load(); // ✅ refresh list after create
+      await load();
     } catch (err: any) {
       setSaveError(err?.message ?? "Failed to add service record");
     } finally {

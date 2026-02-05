@@ -77,7 +77,7 @@ export function PendingGaragesPage() {
   const load = async (status: FilterStatus = filter) => {
     setLoading(true);
     try {
-      const data = await getGarages(status); // ✅ backend: /admin/garages?status=pending|approved|rejected OR all
+      const data = await getGarages(status);  
       setItems(data);
     } catch (e: any) {
       setSnack({
@@ -92,7 +92,6 @@ export function PendingGaragesPage() {
 
   useEffect(() => {
     void load(filter);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   const openConfirm = (action: ActionType, garage: GarageDto) => {
