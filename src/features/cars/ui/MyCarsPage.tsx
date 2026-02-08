@@ -269,7 +269,7 @@ export function MyCarsPage() {
   };
 
   return (
-    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }}>
+    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }} style={{paddingTop:'7vh'}}>
       <Stack spacing={2}>
         <Box>
           <Typography variant="h4" fontWeight={800}>

@@ -171,7 +171,7 @@ export function CarServicesPageHistory() {
   };
 
   return (
-    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }}>
+    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }} style={{ paddingTop: '7vh' }}>
       <Stack spacing={2}>
         <Box>
           <Typography variant="h4" fontWeight={800}>
@@ -184,20 +184,29 @@ export function CarServicesPageHistory() {
             </Typography>
           )}
 
-          {carId && (
-            <Typography variant="body2" color="text.secondary">
-              {t("carServices.carIdLabel")} <b>{carId}</b>
-            </Typography>
-          )}
         </Box>
 
-        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
-          <Stack direction="row" spacing={1} alignItems="center">
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={1}
+          sx={{
+            alignItems: { xs: "stretch", sm: "center" },
+            justifyContent: "space-between",
+          }}
+        >
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={1}
+            sx={{ alignItems: { xs: "stretch", sm: "center" } }}
+          >
             <Button
               variant="contained"
               startIcon={<BuildOutlinedIcon />}
               onClick={openDialog}
               disabled={!garageId || !carId}
+              size="small"
+              fullWidth
+              sx={{ minWidth: { sm: 160 } }}
             >
               {t("carServices.addService")}
             </Button>
@@ -207,6 +216,9 @@ export function CarServicesPageHistory() {
               startIcon={<RefreshIcon />}
               onClick={load}
               disabled={loading}
+              size="small"
+              fullWidth
+              sx={{ minWidth: { sm: 130 } }}
             >
               {t("common.refresh")}
             </Button>
@@ -216,10 +228,18 @@ export function CarServicesPageHistory() {
             variant="outlined"
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate("/garage/cars")}
+            size="small"
+            sx={{
+              width: { xs: "100%", sm: "auto" },
+              minWidth: { sm: 120 },
+              alignSelf: { xs: "stretch", sm: "center" },
+            }}
           >
             {t("common.back")}
           </Button>
+
         </Stack>
+
 
         {error && <Alert severity="error">{error}</Alert>}
 
@@ -281,9 +301,9 @@ export function CarServicesPageHistory() {
 
         <DialogContent dividers>
           <Stack spacing={2} component="form" onSubmit={submit}>
-            <Typography variant="body2" color="text.secondary">
+            {/* <Typography variant="body2" color="text.secondary">
               {t("carServices.carIdLabel")} <b>{carId ?? "-"}</b>
-            </Typography>
+            </Typography> */}
 
             <Divider />
 

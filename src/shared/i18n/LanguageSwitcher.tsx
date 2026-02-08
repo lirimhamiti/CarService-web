@@ -19,7 +19,7 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <ButtonGroup size="small" variant="outlined">
+    <ButtonGroup size="small" variant="outlined" style={{position:'absolute', right:10, top:10}}>
       {(["en", "sq", "mk"] as const).map((lng) => (
         <Button
           key={lng}

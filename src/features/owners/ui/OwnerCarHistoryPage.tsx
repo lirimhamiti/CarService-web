@@ -164,7 +164,7 @@ export function OwnerCarHistoryPage() {
   };
 
   return (
-    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }}>
+    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }} style={{paddingTop:'7vh'}}>
       <Stack spacing={2}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Box>
@@ -184,33 +184,48 @@ export function OwnerCarHistoryPage() {
             )}
           </Box>
 
-          <Stack direction="row" spacing={1}>
-            <Button
-              variant="contained"
-              startIcon={<DownloadIcon />}
-              onClick={downloadReportPdf}
-              disabled={loading || !car}
-            >
-              {t("owner.history.actions.download")}
-            </Button>
+        <Stack
+  direction={{ xs: "column", sm: "row" }}
+  spacing={1}
+  sx={{
+    alignItems: { xs: "stretch", sm: "center" },
+    justifyContent: { xs: "flex-start", sm: "flex-end" },
+    minWidth: { sm: 420 }, // optional: keeps header stable on desktop
+  }}
+>
+  <Button
+    variant="contained"
+    startIcon={<DownloadIcon />}
+    onClick={downloadReportPdf}
+    disabled={loading || !car}
+    size="small"
+    fullWidth
+  >
+    {t("owner.history.actions.download")}
+  </Button>
 
-            <Button
-              variant="outlined"
-              startIcon={<ArrowBackIcon />}
-              onClick={() => navigate("/owner")}
-            >
-              {t("common.back")}
-            </Button>
+  <Button
+    variant="outlined"
+    startIcon={<ArrowBackIcon />}
+    onClick={() => navigate("/owner")}
+    size="small"
+    fullWidth
+  >
+    {t("common.back")}
+  </Button>
 
-            <Button
-              variant="outlined"
-              startIcon={<RefreshIcon />}
-              onClick={() => void load()}
-              disabled={loading}
-            >
-              {t("common.refresh")}
-            </Button>
-          </Stack>
+  <Button
+    variant="outlined"
+    startIcon={<RefreshIcon />}
+    onClick={() => void load()}
+    disabled={loading}
+    size="small"
+    fullWidth
+  >
+    {t("common.refresh")}
+  </Button>
+</Stack>
+
         </Stack>
 
         {error && <Alert severity="error">{error}</Alert>}
