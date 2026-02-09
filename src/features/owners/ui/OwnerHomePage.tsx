@@ -118,9 +118,9 @@ export function OwnerHomePage() {
               </Stack>
             )}
 
-            <Typography variant="caption" color="text.secondary">
+            {/* <Typography variant="caption" color="text.secondary">
               {t("owner.home.tip")}
-            </Typography>
+            </Typography> */}
           </Stack>
         </CardContent>
       </Card>

@@ -40,6 +40,8 @@ import {
   type CreateServiceRequest,
   type ServiceDto,
 } from "../servicesApi";
+import TablePagination from "@mui/material/TablePagination";
+
 
 export function CarServicesPageHistory() {
   const { t } = useTranslation();
@@ -52,6 +54,13 @@ export function CarServicesPageHistory() {
   const [items, setItems] = useState<ServiceDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  useEffect(() => {
+    setPage(0);
+  }, [carId, garageId]);
 
   const [open, setOpen] = useState(false);
   const [serviceDate, setServiceDate] = useState<string>(() => {
@@ -102,6 +111,7 @@ export function CarServicesPageHistory() {
         (b.serviceDate ?? "").localeCompare(a.serviceDate ?? "")
       );
       setItems(sorted);
+      setPage(0);
     } catch (e: any) {
       setError(e?.message ?? t("carServices.failedToLoadHistory"));
     } finally {
@@ -169,6 +179,11 @@ export function CarServicesPageHistory() {
       setSaving(false);
     }
   };
+
+  const pagedItems = useMemo(() => {
+    const start = page * rowsPerPage;
+    return items.slice(start, start + rowsPerPage);
+  }, [items, page, rowsPerPage]);
 
   return (
     <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }} style={{ paddingTop: '7vh' }}>
@@ -263,14 +278,22 @@ export function CarServicesPageHistory() {
                       <TableCell><b>{t("carServices.table.created")}</b></TableCell>
                     </TableRow>
                   </TableHead>
+
                   <TableBody>
-                    {items.map((s) => (
+                    {pagedItems.map((s) => (
                       <TableRow key={s.id} hover>
                         <TableCell>
                           {s.serviceDate ? new Date(s.serviceDate).toLocaleDateString() : "-"}
                         </TableCell>
                         <TableCell>{s.mileage ?? "-"}</TableCell>
-                        <TableCell sx={{ maxWidth: 520, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <TableCell
+                          sx={{
+                            maxWidth: 520,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
                           {s.notes || "-"}
                         </TableCell>
                         <TableCell>
@@ -280,7 +303,23 @@ export function CarServicesPageHistory() {
                     ))}
                   </TableBody>
                 </Table>
+
+                <TablePagination
+                  component="div"
+                  count={items.length}
+                  page={page}
+                  onPageChange={(_, newPage) => setPage(newPage)}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={(e) => {
+                    setRowsPerPage(parseInt(e.target.value, 10));
+                    setPage(0);
+                  }}
+                  rowsPerPageOptions={[5, 10, 25, 50]}
+                  labelRowsPerPage={t("common.rowsPerPage") ?? "Rows per page"}
+                  sx={{ borderTop: "1px solid", borderColor: "divider" }}
+                />
               </TableContainer>
+
             )}
           </CardContent>
         </Card>

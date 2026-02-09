@@ -11,7 +11,8 @@
     "togglePasswordVisibility": "Toggle password visibility",
     "back": "Back",
     "search": "Search",
-    "searching": "Searching..."
+    "searching": "Searching...",
+    "rowsPerPage": "Rows per page"
   },
   "status": {
     "pending": "Pending",

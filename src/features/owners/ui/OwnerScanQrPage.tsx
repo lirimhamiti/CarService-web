@@ -65,9 +65,9 @@ export function OwnerScanQrPage() {
               <video ref={videoRef} style={{ width: "100%", display: "block" }} />
             </Box>
 
-            <Typography variant="caption" color="text.secondary">
+            {/* <Typography variant="caption" color="text.secondary">
               {t("owner.scan.tip")}
-            </Typography>
+            </Typography> */}
           </Stack>
         </CardContent>
       </Card>

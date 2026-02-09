@@ -31,6 +31,8 @@ import {
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useTranslation } from "react-i18next";
+import TablePagination from "@mui/material/TablePagination";
+
 
 function extractToken(input: string) {
   const s = decodeURIComponent(input ?? "").trim();
@@ -39,7 +41,7 @@ function extractToken(input: string) {
     const u = new URL(s);
     const t = u.searchParams.get("token");
     if (t) return t.trim();
-  } catch {}
+  } catch { }
 
   const idx = s.toLowerCase().indexOf("token=");
   if (idx >= 0) {
@@ -60,6 +62,13 @@ export function OwnerCarHistoryPage() {
   const [items, setItems] = useState<OwnerServiceRecordDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  useEffect(() => {
+    setPage(0);
+  }, [kind, value]);
+
 
   const titleValue = useMemo(() => {
     if (!value) return "";
@@ -152,10 +161,10 @@ export function OwnerCarHistoryPage() {
       styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
       headStyles: { fontStyle: "bold" },
       columnStyles: {
-        0: { cellWidth: 140 },
+        0: { cellWidth: 130 },
         1: { cellWidth: 70 },
-        2: { cellWidth: 70 },
-        3: { cellWidth: 160 },
+        2: { cellWidth: 80 },
+        3: { cellWidth: 150 },
         4: { cellWidth: 90 },
       },
     });
@@ -163,8 +172,14 @@ export function OwnerCarHistoryPage() {
     doc.save(`service-history-${identifier}-${today}.pdf`);
   };
 
+  const pagedItems = useMemo(() => {
+    const start = page * rowsPerPage;
+    return items.slice(start, start + rowsPerPage);
+  }, [items, page, rowsPerPage]);
+
+
   return (
-    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }} style={{paddingTop:'7vh'}}>
+    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }} style={{ paddingTop: '7vh' }}>
       <Stack spacing={2}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Box>
@@ -184,47 +199,47 @@ export function OwnerCarHistoryPage() {
             )}
           </Box>
 
-        <Stack
-  direction={{ xs: "column", sm: "row" }}
-  spacing={1}
-  sx={{
-    alignItems: { xs: "stretch", sm: "center" },
-    justifyContent: { xs: "flex-start", sm: "flex-end" },
-    minWidth: { sm: 420 }, // optional: keeps header stable on desktop
-  }}
->
-  <Button
-    variant="contained"
-    startIcon={<DownloadIcon />}
-    onClick={downloadReportPdf}
-    disabled={loading || !car}
-    size="small"
-    fullWidth
-  >
-    {t("owner.history.actions.download")}
-  </Button>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={1}
+            sx={{
+              alignItems: { xs: "stretch", sm: "center" },
+              justifyContent: { xs: "flex-start", sm: "flex-end" },
+              minWidth: { sm: 420 },
+            }}
+          >
+            <Button
+              variant="contained"
+              startIcon={<DownloadIcon />}
+              onClick={downloadReportPdf}
+              disabled={loading || !car}
+              size="small"
+              fullWidth
+            >
+              {t("owner.history.actions.download")}
+            </Button>
 
-  <Button
-    variant="outlined"
-    startIcon={<ArrowBackIcon />}
-    onClick={() => navigate("/owner")}
-    size="small"
-    fullWidth
-  >
-    {t("common.back")}
-  </Button>
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate("/owner")}
+              size="small"
+              fullWidth
+            >
+              {t("common.back")}
+            </Button>
 
-  <Button
-    variant="outlined"
-    startIcon={<RefreshIcon />}
-    onClick={() => void load()}
-    disabled={loading}
-    size="small"
-    fullWidth
-  >
-    {t("common.refresh")}
-  </Button>
-</Stack>
+            <Button
+              variant="outlined"
+              startIcon={<RefreshIcon />}
+              onClick={() => void load()}
+              disabled={loading}
+              size="small"
+              fullWidth
+            >
+              {t("common.refresh")}
+            </Button>
+          </Stack>
 
         </Stack>
 
@@ -262,28 +277,38 @@ export function OwnerCarHistoryPage() {
                   </TableHead>
 
                   <TableBody>
-                    {items.map((s) => (
+                    {pagedItems.map((s) => (
                       <TableRow key={s.id} hover>
                         <TableCell>
                           {s.garageName} ({s.garageCity})
                         </TableCell>
                         <TableCell>
-                          {s.serviceDate
-                            ? new Date(s.serviceDate).toLocaleDateString()
-                            : "-"}
+                          {s.serviceDate ? new Date(s.serviceDate).toLocaleDateString() : "-"}
                         </TableCell>
                         <TableCell>{s.mileage ?? "-"}</TableCell>
                         <TableCell>{s.notes || "-"}</TableCell>
                         <TableCell>
-                          {s.createdAt
-                            ? new Date(s.createdAt).toLocaleString()
-                            : "-"}
+                          {s.createdAt ? new Date(s.createdAt).toLocaleString() : "-"}
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
+
+                <TablePagination
+                  component="div"
+                  count={items.length}
+                  page={page}
+                  onPageChange={(_, newPage) => setPage(newPage)}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={(e) => {
+                    setRowsPerPage(parseInt(e.target.value, 10));
+                    setPage(0);
+                  }}
+                  rowsPerPageOptions={[5, 10, 25, 50]}
+                />
               </TableContainer>
+
             )}
           </CardContent>
         </Card>

@@ -39,6 +39,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
 
 import { createService, type CreateServiceRequest } from "../../services/servicesApi";
+import TablePagination from "@mui/material/TablePagination";
 
 export function MyCarsPage() {
   const { t } = useTranslation("common");
@@ -50,6 +51,9 @@ export function MyCarsPage() {
   const [items, setItems] = useState<CarDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [open, setOpen] = useState(false);
   const [plateNumber, setPlateNumber] = useState("");
@@ -89,6 +93,10 @@ export function MyCarsPage() {
     return !serviceSaving;
   }, [garageId, serviceCarId, serviceDate, mileage, serviceSaving]);
 
+  useEffect(() => {
+    setPage(0);
+  }, [garageId])
+
   const load = async () => {
     setError(null);
     setLoading(true);
@@ -103,6 +111,7 @@ export function MyCarsPage() {
     try {
       const cars = await getGarageCars(garageId);
       setItems(cars);
+      setPage(0);
     } catch (e: any) {
       setError(e?.message ?? t("garageCars.failedToLoadCars"));
     } finally {
@@ -268,8 +277,13 @@ export function MyCarsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const pagedItems = useMemo(() => {
+    const start = page * rowsPerPage;
+    return items.slice(start, start + rowsPerPage);
+  }, [items, page, rowsPerPage]);
+
   return (
-    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }} style={{paddingTop:'7vh'}}>
+    <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }} style={{ paddingTop: '7vh' }}>
       <Stack spacing={2}>
         <Box>
           <Typography variant="h4" fontWeight={800}>
@@ -319,7 +333,7 @@ export function MyCarsPage() {
                   </TableHead>
 
                   <TableBody>
-                    {items.map((c) => (
+                    {pagedItems.map((c) => (
                       <TableRow key={c.id} hover>
                         <TableCell sx={{ fontWeight: 700 }}>{c.plateNumber}</TableCell>
                         <TableCell>{c.vin || "-"}</TableCell>
@@ -369,7 +383,23 @@ export function MyCarsPage() {
                     ))}
                   </TableBody>
                 </Table>
+
+                <TablePagination
+                  component="div"
+                  count={items.length}
+                  page={page}
+                  onPageChange={(_, newPage) => setPage(newPage)}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={(e) => {
+                    setRowsPerPage(parseInt(e.target.value, 10));
+                    setPage(0);
+                  }}
+                  rowsPerPageOptions={[5, 10, 25, 50]}
+                  labelRowsPerPage={t("common.rowsPerPage") ?? "Rows per page"}
+                  sx={{ borderTop: "1px solid", borderColor: "divider" }}
+                />
               </TableContainer>
+
             )}
           </CardContent>
         </Card>

@@ -34,6 +34,8 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import { useTranslation } from "react-i18next";
+import TablePagination from "@mui/material/TablePagination";
+
 
 type ActionType = "approve" | "reject";
 type FilterStatus = "pending" | "approved" | "rejected" | "all";
@@ -71,6 +73,14 @@ export function PendingGaragesPage() {
     if (status === "rejected") return { label: t("status.rejected"), color: "error" as const };
     return { label: t("status.unknown"), color: "default" as const };
   };
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  useEffect(() => {
+    setPage(0);
+  }, [filter, items.length]);
+
 
   const load = async (status: FilterStatus = filter) => {
     setLoading(true);
@@ -133,6 +143,12 @@ export function PendingGaragesPage() {
   };
 
   const rows = useMemo(() => items, [items]);
+
+  const pagedRows = useMemo(() => {
+    const start = page * rowsPerPage;
+    return rows.slice(start, start + rowsPerPage);
+  }, [rows, page, rowsPerPage]);
+
 
   const confirmTitle =
     confirm.action === "approve" ? t("admin.garages.confirmApproveTitle") : t("admin.garages.confirmRejectTitle");
@@ -219,7 +235,7 @@ export function PendingGaragesPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                rows.map((g) => {
+                pagedRows.map((g) => {
                   const status = normalizeStatus((g as any).status);
                   const chip = statusChipProps(status);
 
@@ -273,7 +289,23 @@ export function PendingGaragesPage() {
               )}
             </TableBody>
           </Table>
+
+          <TablePagination
+            component="div"
+            count={rows.length}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            labelRowsPerPage={t("common.rowsPerPage") ?? "Rows per page"}
+            sx={{ borderTop: "1px solid", borderColor: "divider" }}
+          />
         </TableContainer>
+
       </Paper>
 
       <Dialog open={confirm.open} onClose={closeConfirm}>
@@ -282,10 +314,10 @@ export function PendingGaragesPage() {
           <DialogContentText>
             {confirm.garage
               ? t("admin.garages.confirmBody", {
-                  action: confirmActionText,
-                  name: confirm.garage.name,
-                  city: confirm.garage.city,
-                })
+                action: confirmActionText,
+                name: confirm.garage.name,
+                city: confirm.garage.city,
+              })
               : t("common.areYouSure")}
           </DialogContentText>
         </DialogContent>

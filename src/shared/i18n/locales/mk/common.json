@@ -11,7 +11,8 @@
     "togglePasswordVisibility": "Прикажи/Сокриј лозинка",
     "back": "Назад",
     "search": "Пребарај",
-    "searching": "Се пребарува..."
+    "searching": "Се пребарува...",
+    "rowsPerPage": "Редови по страница"
   },
   "status": {
     "pending": "Во чекање",

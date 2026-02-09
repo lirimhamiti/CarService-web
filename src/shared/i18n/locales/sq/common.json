@@ -11,7 +11,8 @@
     "togglePasswordVisibility": "Shfaq/Fsheh fjalëkalimin",
     "back": "Kthehu",
     "search": "Kërko",
-    "searching": "Duke kërkuar..."
+    "searching": "Duke kërkuar...",
+    "rowsPerPage": "Rreshta për faqe"
   },
   "status": {
     "pending": "Në pritje",
